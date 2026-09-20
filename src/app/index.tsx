@@ -1,16 +1,22 @@
-import { Link } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import SplashScreen from "@/components/splash/splash-screen";
+import { useRouter } from "expo-router";
+import { useEffect } from "react";
+import { StyleSheet } from "react-native";
 
 export default function Index() {
 
 
+  const {replace} = useRouter()
+
+
+  useEffect(()=>{
+    setTimeout(()=>replace("/onboarding"), 1000)
+  },[])
   
 
 
   return (
-    <View style={styles.container}>
-      <Link href={"/home"}>Go home</Link>
-    </View>
+      <SplashScreen />
   );
 }
 

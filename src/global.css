@@ -12,6 +12,7 @@
   :root {
     --primary: #e18dff;
     --primary-foreground: 250 250 250;
+    --grey: #f7f7f7;
     --card: 255 255 255;
     --secondary: 245 245 245;
     --secondary-foreground: 23 23 23;
@@ -27,6 +28,8 @@
     --ring: 212 212 212;
     --accent: 247 247 247;
     --accent-foreground: 52 52 52;
+    --light-pink: #fea1cd;
+    --indicator-inactive-color: rgba(0, 0, 0, 0.3);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -110,6 +113,9 @@
   --color-ring: rgb(var(--ring));
   --color-accent: rgb(var(--accent));
   --color-accent-foreground: rgb(var(--accent-foreground));
-  --font-sarif: "SourceSerifPro_400Regular";
+  --font-serif: "SourceSerifPro_400Regular";
+  --font-serif-semibold: "SourceSerifPro_600SemiBold";
   --font-poppins: "Poppins_400Regular";
+  --color-lightPink: var(--light-pink);
+  --color-carouselIndicatorOutline: var(--indicator-inactive-color);
 }

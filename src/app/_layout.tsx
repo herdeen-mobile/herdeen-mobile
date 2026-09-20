@@ -1,6 +1,6 @@
 import '@/src/global.css';
 import { Poppins_400Regular, useFonts } from "@expo-google-fonts/poppins";
-import { SourceSerifPro_400Regular } from "@expo-google-fonts/source-serif-pro";
+import { SourceSerifPro_400Regular, SourceSerifPro_600SemiBold } from "@expo-google-fonts/source-serif-pro";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import { StatusBar, useColorScheme } from 'react-native';
@@ -16,7 +16,8 @@ export default function RootLayout() {
 
     const [loaded, error] = useFonts({
         Poppins_400Regular,
-        SourceSerifPro_400Regular
+        SourceSerifPro_400Regular,
+        SourceSerifPro_600SemiBold
     })
 
 
@@ -34,9 +35,13 @@ export default function RootLayout() {
 
     return (
         <>
-        <Stack>
+        <Stack screenOptions={{
+            headerShown: false
+        }}>
             <Stack.Screen name="home" options={{ headerShown: false }} />
             <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)/signup"/>
         </Stack>
         <StatusBar animated={true} translucent={true} />
         </>
