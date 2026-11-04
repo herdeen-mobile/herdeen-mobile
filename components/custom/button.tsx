@@ -1,6 +1,7 @@
 import { cn } from '@/src/utils/cn';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import {
+  Image,
   Text,
   TouchableOpacity,
   type StyleProp,
@@ -10,24 +11,27 @@ import {
 } from 'react-native';
 
 export interface ButtonProps extends TouchableOpacityProps {
-  label: string;
-  variant?: 'primary' | 'secondary' | 'outline';
+  label: ReactNode |  string;
+  variant?: 'primary' | 'secondary' | 'outline' | 'none';
   className?: string;
   textClassName?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
   onPress?: ()=>void
+  icon?: string
 }
 const variantStyles = {
-  primary: 'active:bg-blue-700',
-  secondary: '',
-  outline: 'bg-transparent border border-blue-600 active:bg-blue-50',
+  primary: 'active:bg-inputColor',
+  secondary: 'bg-border-stroke',
+  outline: 'border-[1px] border-carouselIndicatorOutline',
+  none: ''
 };
 
 const variantTextStyles = {
   primary: 'text-white',
-  secondary: 'text-back',
-  outline: 'text-blue-600',
+  secondary: 'text-subheaderColor',
+  outline: 'text-subheaderColor',
+  none: ''
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -38,6 +42,7 @@ export const Button: React.FC<ButtonProps> = ({
   style,
   textStyle,
   disabled,
+  icon,
   ...props
 }) => {
   return (
@@ -45,7 +50,7 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled}
       style={style}
       className={cn(
-        'flex-row items-center justify-center h-12.5 rounded-[100px] transition-all',
+        'flex-row items-center justify-center h-12.5 transition-all',
         variantStyles[variant],
         disabled && 'opacity-50 bg-gray-300',
         className
@@ -53,6 +58,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
 
     >
+      {icon && <Image source={{ uri: icon }} />}
       <Text
         style={textStyle}
         className={cn(

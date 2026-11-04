@@ -10,7 +10,7 @@ export default function Index() {
 
 
   useEffect(()=>{
-    setTimeout(()=>replace("/onboarding"), 1000)
+    setTimeout(()=>replace("/slide"), 1000)
   },[])
   
 

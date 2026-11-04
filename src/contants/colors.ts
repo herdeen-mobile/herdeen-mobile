@@ -13,4 +13,6 @@ export const Colors = {
     backgroundSelected: "#2E3135",
     textSecondary: "#B0B4BA",
   },
+
+  grey500: "#5B6268",
 } as const;

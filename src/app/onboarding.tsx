@@ -32,6 +32,8 @@ const OnboardingScreen = () => {
 
     const gotoSignup = ()=> replace("/signup")
 
+    const onSkip = ()=> replace("/signup")
+
 
 
 
@@ -63,12 +65,17 @@ const OnboardingScreen = () => {
             <View className='items-center gap-5'>
                 <Button 
                     label={isLast ? 'Get Started' : 'Next'} 
-                    className='w-[200px] bg-primary text-white' variant='primary' 
+                    className='w-[200px] bg-primary text-white rounded-[100px]' variant='primary'
                     onPress={isLast ? gotoSignup : next}
                 />
 
 
-                <Button label='Skip' className='w-[200px] text-black' variant='secondary' />
+                <Button 
+                    label='Skip' 
+                    className='w-[200px] text-black' 
+                    variant='none' 
+                    onPress={onSkip}
+                />
             </View>
 
 
