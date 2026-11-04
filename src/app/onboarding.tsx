@@ -7,20 +7,14 @@ import { useRouter } from 'expo-router'
 import { ReactNode, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
-
-
 const OnboardingScreen = () => {
-
 
     const [current, setCurrent] = useState<number>(0)
     const [isLast, setIsLast] = useState<boolean>(false)
 
-
     const {replace} = useRouter()
 
-
     const slides: ReactNode[] = [<SlideOne />, <SlideTwo />, <SlideThree />]
-
 
     const next = ()=>{ 
         if(current === slides.length - 1){
@@ -29,10 +23,7 @@ const OnboardingScreen = () => {
         setCurrent(current + 1)
     }
 
-
     const gotoSignup = ()=> replace("/signup")
-
-    const onSkip = ()=> replace("/signup")
 
 
 
@@ -43,8 +34,6 @@ const OnboardingScreen = () => {
             {/* ONBOARDING SLIDES */}
 
            {slides[current]}
-
-
 
             {/* CAROUSEL INDICATORS */}
             <View className='flex-row items-center gap-1 justify-center my-[49px]'>
@@ -57,9 +46,7 @@ const OnboardingScreen = () => {
                         </View>
                     ))
                 }
-      
             </View>
-
 
             {/* NEXT AND SKIP BUTTON */}
             <View className='items-center gap-5'>
@@ -69,7 +56,6 @@ const OnboardingScreen = () => {
                     onPress={isLast ? gotoSignup : next}
                 />
 
-
                 <Button 
                     label='Skip' 
                     className='w-[200px] text-black' 
@@ -77,8 +63,6 @@ const OnboardingScreen = () => {
                     onPress={onSkip}
                 />
             </View>
-
-
 
         </View>
   )

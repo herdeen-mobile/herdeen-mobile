@@ -5,15 +5,11 @@ import { StyleSheet } from "react-native";
 
 export default function Index() {
 
-
   const {replace} = useRouter()
-
 
   useEffect(()=>{
     setTimeout(()=>replace("/slide"), 1000)
   },[])
-  
-
 
   return (
       <SplashScreen />

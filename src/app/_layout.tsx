@@ -8,18 +8,13 @@ import { StatusBar, useColorScheme } from 'react-native';
 
 export default function RootLayout() {
 
-
     const colorScheme = useColorScheme()
-
-   
-
 
     const [loaded, error] = useFonts({
         Poppins_400Regular,
         SourceSerifPro_400Regular,
         SourceSerifPro_600SemiBold
     })
-
 
     useEffect(() => {
         if (loaded || error) {
@@ -30,8 +25,6 @@ export default function RootLayout() {
     if (!loaded && !error) {
         return null;
     }
-
-
 
     return (
         <>
