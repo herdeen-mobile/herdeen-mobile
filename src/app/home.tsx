@@ -239,13 +239,16 @@
 // }
 
 // src/app/home.tsx
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { useAuth } from '@/src/context/auth-context';
+import { useDailyPlanQuery, useToggleTaskCompletedMutation } from '@/src/hooks/use-planner';
+import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { user } = useAuth();
 
   // State for live time clock updates
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -305,7 +308,7 @@ export default function HomeScreen() {
   }, [duasList.length]);
 
   // State for task completion toggles
-  const [tasks, setTasks] = useState([
+  const [tasks, setTasks] = useState<Array<{ id: number | string; title: string; completed: boolean }>>([
     { id: 1, title: 'pray 5 times', completed: true },
     { id: 2, title: 'Read Surah Yaseen', completed: true },
     { id: 3, title: 'Take a 5-min dhikr break', completed: false },
@@ -313,8 +316,32 @@ export default function HomeScreen() {
     { id: 5, title: 'Complete your daily plan', completed: false },
   ]);
 
-  const toggleTask = (id: number) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  const todayStr = currentTime.toISOString().split('T')[0];
+  const { data: planData } = useDailyPlanQuery(todayStr);
+  const { mutate: toggleCompletedApi } = useToggleTaskCompletedMutation();
+
+  useEffect(() => {
+    const raw = planData?.payload || planData?.data || planData;
+    const serverTasks = raw?.tasks || (Array.isArray(raw) ? raw : null);
+    if (serverTasks && Array.isArray(serverTasks) && serverTasks.length > 0) {
+      setTasks(
+        serverTasks.map((t: any, idx: number) => ({
+          id: t.id || t._id || t.taskId || idx + 1,
+          title: t.title || t.name || 'Task',
+          completed: Boolean(t.completed || t.isCompleted),
+        }))
+      );
+    }
+  }, [planData]);
+
+  const toggleTask = (id: number | string) => {
+    const targetTask = tasks.find((t) => t.id === id);
+    if (targetTask) {
+      toggleCompletedApi({ date: todayStr, task: targetTask.title });
+    }
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+    );
   };
 
   const activeDua = duasList[currentDuaIndex];
@@ -340,7 +367,9 @@ export default function HomeScreen() {
             </View>
             <View>
               <Text className="text-xs text-gray-400 font-medium">Assalamu Alaikum,</Text>
-              <Text className="text-xl font-bold text-gray-900">Aishah!</Text>
+              <Text className="text-xl font-bold text-gray-900">
+                {user?.firstName ? `${user.firstName}!` : 'Aishah!'}
+              </Text>
             </View>
           </TouchableOpacity>
 

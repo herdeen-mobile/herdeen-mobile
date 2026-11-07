@@ -1,4 +1,5 @@
 //components/custom/input.tsx
+import { useThemeColors } from '@/src/constants/colors';
 import { cn } from '@/src/utils/cn';
 import { forwardRef } from 'react';
 import {
@@ -25,21 +26,23 @@ export const Input = forwardRef<TextInput, InputProps>(({
   className,
   style,
   containerStyle,
+  placeholderTextColor,
   ...props
 }, ref) => {
-  return (
+  const colors = useThemeColors();
 
-      <TextInput
-        ref={ref}
-        style={style}
-        placeholderTextColor="#9CA3AF"
-        className={cn(
-          'rounded-xl  bg-inputColor px-4 py-3 text-base text-gray-900',
-          'focus:border-carouselIndicatorOutline focus:ring-1 focus:ring-carouselIndicatorOutline',
-          className
-        )}
-        {...props}
-      />
+  return (
+    <TextInput
+      ref={ref}
+      style={[{ color: colors.text.primary }, style]}
+      placeholderTextColor={placeholderTextColor ?? colors.text.inputText}
+      className={cn(
+        'rounded-xl bg-inputColor px-4 py-3 text-base',
+        'focus:border-carouselIndicatorOutline focus:ring-1 focus:ring-carouselIndicatorOutline',
+        className
+      )}
+      {...props}
+    />
   );
 });
 

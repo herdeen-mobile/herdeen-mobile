@@ -5,117 +5,165 @@
 @import "nativewind/theme";
 
 /* ─── Theme: design tokens (light / dark) ─────────────────────────
+   Generated from Figma Tokens (Light.tokens.json & Dark.tokens.json)
    1. :root              — light defaults (all platforms)
    2. @media dark :root  — dark defaults; nativewind maps this to
                            Appearance.getColorScheme() on native.
    3. :root.dark / :root.light — higher specificity for web class toggle. */
 @layer theme {
   :root {
-    --primary: #e18dff;
-    --primary-foreground: 250 250 250;
-    --grey: #5b6268;
-    --card: 255 255 255;
-    --secondary: 245 245 245;
-    --secondary-foreground: 23 23 23;
-    --background: 255 255 255;
-    --popover: 255 255 255;
-    --popover-foreground: 10 10 10;
-    --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
-    --destructive: 231 0 11;
-    --foreground: 10 10 10;
-    --border: 229 229 229;
-    --input: 229 229 229;
-    --ring: 212 212 212;
-    --accent: 247 247 247;
-    --accent-foreground: 52 52 52;
-    --light-pink: #fea1cd;
-    --indicator-inactive-color: rgba(0, 0, 0, 0.3);
-    --input-color: #f7f7f7;
-    --border-stroke: rgba(0, 0, 0, 0.1);
+    /* Brand */
+    --brand-primary: #C572E3;
+    --brand-secondary: #FC89C5;
+    --brand-primary-dark: #AD00EB;
+
+    /* Background */
+    --bg-main: #FFFFFF;
+    --bg-section: #F7F7F7;
+    --bg-overlay: #F5F5F5;
+    --bg-muted: #9E9E9E;
+
+    /* Text */
+    --text-primary: #13181C;
+    --text-secondary: #5B6268;
+    --text-input: rgba(0, 0, 0, 0.3);
+    --text-button: #FFFFFF;
+    --text-reverse: #FFFFFF;
+    --text-fixed-white: #FFFFFF;
+
+    /* Stroke */
+    --stroke-border: rgba(0, 0, 0, 0.1);
+    --stroke-border-2: rgba(255, 255, 255, 0.1);
+    --stroke-fixed: rgba(255, 255, 255, 0.1);
+    --stroke-brand: rgba(196, 62, 220, 0.1);
+
+    /* State */
+    --state-success: #28A745;
+    --state-success-tint: rgba(40, 167, 69, 0.1);
+    --state-warning: #FFD333;
+    --state-warning-tint: rgba(255, 211, 51, 0.1);
+    --state-error: #EF4444;
+    --state-error-tint: rgba(239, 68, 68, 0.1);
+
+    /* Aliases for backward compatibility */
+    --primary: var(--brand-primary);
+    --primary-foreground: 255 255 255;
+    --grey: var(--text-secondary);
+    --light-pink: var(--brand-secondary);
+    --indicator-inactive-color: var(--text-input);
+    --input-color: var(--bg-section);
+    --border-stroke: var(--stroke-border);
+    --background: #FFFFFF;
+    --foreground: #13181C;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --primary: #e18dff;
-      --primary-foreground: 23 23 23;
-      --card: 23 23 23;
-      --secondary: 38 38 38;
-      --secondary-foreground: 250 250 250;
-      --background: 10 10 10;
-      --popover: 23 23 23;
-      --popover-foreground: 250 250 250;
-      --muted: 38 38 38;
-      --muted-foreground: 161 161 161;
-      --destructive: 255 100 103;
-      --foreground: 250 250 250;
-      --border: 46 46 46;
-      --input: 46 46 46;
-      --accent: 38 38 38;
-      --accent-foreground: 250 250 250;
-      --ring: 115 115 115;
+      /* Brand */
+      --brand-primary: #E18DFF;
+      --brand-secondary: #FEA1CD;
+      --brand-primary-dark: #AA74E0;
+
+      /* Background */
+      --bg-main: #16171A;
+      --bg-section: #1F2125;
+      --bg-overlay: #2B3138;
+      --bg-muted: #7D7D7D;
+
+      /* Text */
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-input: rgba(255, 255, 255, 0.3);
+      --text-button: #FFFFFF;
+      --text-reverse: #000000;
+      --text-fixed-white: #FFFFFF;
+
+      /* Stroke */
+      --stroke-border: rgba(255, 255, 255, 0.1);
+      --stroke-border-2: rgba(0, 0, 0, 0.1);
+      --stroke-fixed: rgba(255, 255, 255, 0.1);
+      --stroke-brand: rgba(170, 116, 224, 0.1);
+
+      /* State */
+      --state-success: #0ACF83;
+      --state-success-tint: rgba(10, 207, 131, 0.1);
+      --state-warning: #FFD333;
+      --state-warning-tint: rgba(255, 211, 51, 0.1);
+      --state-error: #EF4444;
+      --state-error-tint: rgba(239, 68, 68, 0.1);
+
+      /* Aliases for backward compatibility */
+      --primary: var(--brand-primary);
+      --primary-foreground: 0 0 0;
+      --grey: var(--text-secondary);
+      --light-pink: var(--brand-secondary);
+      --indicator-inactive-color: var(--text-input);
+      --input-color: var(--bg-section);
+      --border-stroke: var(--stroke-border);
+      --background: #16171A;
+      --foreground: #FFFFFF;
     }
   }
 
   :root.dark {
-    --primary: #e18dff;
-    --primary-foreground: 23 23 23;
-    --card: 23 23 23;
-    --secondary: 38 38 38;
-    --secondary-foreground: 250 250 250;
-    --background: 10 10 10;
-    --popover: 23 23 23;
-    --popover-foreground: 250 250 250;
-    --muted: 38 38 38;
-    --muted-foreground: 161 161 161;
-    --destructive: 255 100 103;
-    --foreground: 250 250 250;
-    --border: 46 46 46;
-    --input: 46 46 46;
-    --accent: 38 38 38;
-    --accent-foreground: 250 250 250;
-    --ring: 115 115 115;
-  }
+    --brand-primary: #E18DFF;
+    --brand-secondary: #FEA1CD;
+    --brand-primary-dark: #AA74E0;
 
-  :root.light {
-    --primary: 23 23 23;
-    --primary-foreground: 250 250 250;
-    --card: 255 255 255;
-    --secondary: 245 245 245;
-    --secondary-foreground: 23 23 23;
-    --background: 255 255 255;
-    --popover: 255 255 255;
-    --popover-foreground: 10 10 10;
-    --muted: 245 245 245;
-    --muted-foreground: 115 115 115;
-    --destructive: 231 0 11;
-    --foreground: 10 10 10;
-    --border: 229 229 229;
-    --input: 229 229 229;
-    --ring: 212 212 212;
-    --accent: 247 247 247;
-    --accent-foreground: 52 52 52;
+    --bg-main: #16171A;
+    --bg-section: #1F2125;
+    --bg-overlay: #2B3138;
+    --bg-muted: #7D7D7D;
+
+    --text-primary: #FFFFFF;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-input: rgba(255, 255, 255, 0.3);
+    --text-button: #FFFFFF;
+    --text-reverse: #000000;
+    --text-fixed-white: #FFFFFF;
+
+    --stroke-border: rgba(255, 255, 255, 0.1);
+    --stroke-border-2: rgba(0, 0, 0, 0.1);
+    --stroke-fixed: rgba(255, 255, 255, 0.1);
+    --stroke-brand: rgba(170, 116, 224, 0.1);
+
+    --state-success: #0ACF83;
+    --state-success-tint: rgba(10, 207, 131, 0.1);
+    --state-warning: #FFD333;
+    --state-warning-tint: rgba(255, 211, 51, 0.1);
+    --state-error: #EF4444;
+    --state-error-tint: rgba(239, 68, 68, 0.1);
+
+    --primary: var(--brand-primary);
+    --primary-foreground: 0 0 0;
+    --grey: var(--text-secondary);
+    --light-pink: var(--brand-secondary);
+    --indicator-inactive-color: var(--text-input);
+    --input-color: var(--bg-section);
+    --border-stroke: var(--stroke-border);
+    --background: #16171A;
+    --foreground: #FFFFFF;
   }
 }
 
 @theme inline {
   --color-primary: var(--primary);
-  --color-primary-foreground: rgb(var(--primary-foreground));
-  --color-card: rgb(var(--card));
-  --color-secondary: rgb(var(--secondary));
-  --color-secondary-foreground: rgb(var(--secondary-foreground));
-  --color-background: rgb(var(--background));
-  --color-popover: rgb(var(--popover));
-  --color-popover-foreground: rgb(var(--popover-foreground));
-  --color-muted: rgb(var(--muted));
-  --color-muted-foreground: rgb(var(--muted-foreground));
-  --color-destructive: rgb(var(--destructive));
-  --color-foreground: rgb(var(--foreground));
-  --color-border: rgb(var(--border));
-  --color-input: rgb(var(--input));
-  --color-ring: rgb(var(--ring));
-  --color-accent: rgb(var(--accent));
-  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-primary-foreground: var(--primary-foreground);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-brand-dark: var(--brand-primary-dark);
+  --color-bg-main: var(--bg-main);
+  --color-bg-section: var(--bg-section);
+  --color-bg-overlay: var(--bg-overlay);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-input: var(--text-input);
+  --color-stroke-border: var(--stroke-border);
+  --color-stroke-brand: var(--stroke-brand);
+  --color-state-success: var(--state-success);
+  --color-state-warning: var(--state-warning);
+  --color-state-error: var(--state-error);
+
   --font-serif: "SourceSerifPro_400Regular";
   --font-serif-semibold: "SourceSerifPro_600SemiBold";
   --font-poppins: "Poppins_400Regular";

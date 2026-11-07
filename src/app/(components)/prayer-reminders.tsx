@@ -1,12 +1,14 @@
 // src/app/(components)/prayer-reminders.tsx
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { useUpdatePrayerSettingsMutation } from '@/src/hooks/use-prayer';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../../components/custom/button';
 
 export default function PrayerRemindersScreen() {
   const router = useRouter();
+  const { mutate: updateSettings, isPending: isSaving } = useUpdatePrayerSettingsMutation();
 
   // Toggles for Salah prayers
   const [prayers, setPrayers] = useState({
@@ -25,8 +27,19 @@ export default function PrayerRemindersScreen() {
   };
 
   const handleSave = () => {
-    console.log('Saved Prayer Reminders:', { prayers, reminderType });
-    router.back();
+    updateSettings(
+      {
+        data: {
+          remindersEnabled: true,
+        },
+        wakeWorker: true,
+      },
+      {
+        onSettled: () => {
+          router.back();
+        },
+      }
+    );
   };
 
   return (
@@ -103,9 +116,10 @@ export default function PrayerRemindersScreen() {
 
         {/* Save Button */}
         <Button
-          label="Save"
+          label={isSaving ? 'Saving...' : 'Save'}
           variant="primary"
           onPress={handleSave}
+          disabled={isSaving}
           className="bg-primary active:opacity-90 rounded-full py-4"
           textClassName="text-white font-bold text-base"
         />

@@ -22,7 +22,7 @@ export interface ButtonProps extends TouchableOpacityProps {
   icon?: string
 }
 const variantStyles = {
-  primary: 'active:bg-inputColor',
+  primary: 'active:bg-inputColor bg-primary',
   secondary: 'bg-border-stroke',
   outline: 'border-[1px] border-carouselIndicatorOutline',
   none: ''
@@ -59,7 +59,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
 
     >
-      {icon && <Image source={{ uri: icon }} />}
+      {icon && <Image source={icon as any} />}
       <Text
         style={textStyle}
         className={cn(

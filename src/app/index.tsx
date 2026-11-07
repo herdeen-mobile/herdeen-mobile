@@ -1,19 +1,28 @@
 import SplashScreen from "@/components/splash/splash-screen";
+import { useAuth } from "@/src/context/auth-context";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet } from "react-native";
 
 export default function Index() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  const {replace} = useRouter()
+  useEffect(() => {
+    if (isLoading) return;
 
-  useEffect(()=>{
-    setTimeout(()=>replace("/slide"), 1000)
-  },[])
+    const timer = setTimeout(() => {
+      if (isAuthenticated) {
+        router.replace("/home");
+      } else {
+        router.replace("/onboarding");
+      }
+    }, 1000);
 
-  return (
-      <SplashScreen />
-  );
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, isLoading, router]);
+
+  return <SplashScreen />;
 }
 
 const styles = StyleSheet.create({

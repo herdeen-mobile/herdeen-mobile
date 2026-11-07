@@ -1,4 +1,4 @@
-import { Colors } from '@/contants/colors'
+// import { Colors } from '@/contants/colors'
 import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -35,6 +35,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 400,
     fontStyle: "normal",
-    color: Colors.grey500
+    // color: Colors.grey500
   }
 })

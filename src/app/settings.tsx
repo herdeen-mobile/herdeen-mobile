@@ -172,10 +172,12 @@ import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 // Import the Logout Modal component from your components/modal folder
+import { useAuth } from '@/src/context/auth-context';
 import LogoutModal from './(components)/modals/logout';
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { logout } = useAuth();
 
   // State to control the visibility of the "Rate Us" bottom sheet modal
   const [isRateModalVisible, setIsRateModalVisible] = useState(false);
@@ -191,10 +193,10 @@ export default function SettingsScreen() {
   };
 
   // Handler for confirmed logout action
-  const handleConfirmLogout = () => {
+  const handleConfirmLogout = async () => {
     setIsLogoutModalVisible(false);
-    // Redirect user to the login screen
-    router.replace('/login' as any);
+    await logout();
+    router.replace('/(auth)/signin' as any);
   };
 
   return (

@@ -3,27 +3,35 @@ import { Button } from '@/components/custom/button'
 import SlideOne from '@/components/onboarding/slide-one'
 import SlideThree from '@/components/onboarding/slide-three'
 import SlideTwo from '@/components/onboarding/slide-two'
+import { useAuth } from '@/src/context/auth-context'
 import { useRouter } from 'expo-router'
-import { ReactNode, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 const OnboardingScreen = () => {
 
     const [current, setCurrent] = useState<number>(0)
-    const [isLast, setIsLast] = useState<boolean>(false)
+    const { isAuthenticated, isLoading } = useAuth()
+    const { replace } = useRouter()
 
-    const {replace} = useRouter()
+    useEffect(() => {
+        if (!isLoading && isAuthenticated) {
+            replace('/home')
+        }
+    }, [isAuthenticated, isLoading, replace])
 
     const slides: ReactNode[] = [<SlideOne />, <SlideTwo />, <SlideThree />]
 
     const next = ()=>{ 
-        if(current === slides.length - 1){
-            return setIsLast(true)
+        if(current < slides.length - 1){
+            setCurrent(current + 1)
+    
         }
-        setCurrent(current + 1)
     }
 
-    const gotoSignup = ()=> replace("/signup")
+    const gotoSignup = () => replace("/(auth)/signup")
+
+    const onSkip = () => replace("/(auth)/signup")
 
 
 
@@ -51,10 +59,11 @@ const OnboardingScreen = () => {
             {/* NEXT AND SKIP BUTTON */}
             <View className='items-center gap-5'>
                 <Button 
-                    label={isLast ? 'Get Started' : 'Next'} 
+                    label={current === slides.length - 1 ? 'Get Started' : 'Next'} 
                     className='w-[200px] bg-primary text-white rounded-[100px]' variant='primary'
-                    onPress={isLast ? gotoSignup : next}
+                    onPress={current === slides.length - 1 ? gotoSignup : next}
                 />
+
 
                 <Button 
                     label='Skip' 

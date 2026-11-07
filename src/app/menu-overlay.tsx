@@ -1,11 +1,14 @@
 // src/app/menu-overlay.tsx
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, Switch, Modal, Linking } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { useAuth } from '@/src/context/auth-context';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Image, Linking, Modal, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 export default function MenuOverlayScreen() {
   const router = useRouter();
+  const { user } = useAuth();
+  const fullName = user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Aishah Abdullahi';
 
   // State for the "Off Solah?" toggle switch
   const [isOffSolah, setIsOffSolah] = useState(false);
@@ -15,7 +18,6 @@ export default function MenuOverlayScreen() {
 
   // Handler for store redirection from Rate Us modal
   const handleRateOnStore = () => {
-    console.log('Redirecting to Google Play / App Store...');
     // Add Linking.openURL('your-store-url') here if needed
     setIsRateModalVisible(false);
   };
@@ -52,7 +54,7 @@ export default function MenuOverlayScreen() {
           </View>
 
           <Text className="text-xs text-gray-400 font-medium mb-0.5">Asalam alaikum</Text>
-          <Text className="text-2xl font-bold text-gray-900 tracking-tight">Aishah Abdullahi</Text>
+          <Text className="text-2xl font-bold text-gray-900 tracking-tight">{fullName}</Text>
         </View>
 
         {/* 3. Off Solah? Toggle Row */}
