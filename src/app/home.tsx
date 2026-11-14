@@ -1,259 +1,100 @@
-// // src/app/home.tsx
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
-// import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
-// import { useRouter } from 'expo-router';
-//
-// export default function HomeScreen() {
-//   const router = useRouter();
-//
-//   // State for live time clock updates
-//   const [currentTime, setCurrentTime] = useState(new Date());
-//
-//   // Update clock every second
-//   useEffect(() => {
-//     const timer = setInterval(() => {
-//       setCurrentTime(new Date());
-//     }, 1000);
-//     return () => clearInterval(timer);
-//   }, []);
-//
-//   // Format time string to HH:MM:SS or HH:MM
-//   const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-//
-//   // Format calendar date dynamically (e.g., "Tuesday, 22nd September")
-//   const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
-//   const formattedDate = currentTime.toLocaleDateString('en-US', options);
-//
-//   // Array of Adhkar / Duas that rotate automatically every 2 seconds
-//   const duasList = [
-//     {
-//       arabic: 'اللهم إنك عفو تحب العفو فاعف عني',
-//       transliteration: 'Allahuma innaka afuwun tuhibul afuwa, fahfu ani.',
-//       translation: 'O Allah, You are Forgiving and love forgiveness, so forgive me.',
-//     },
-//     {
-//       arabic: 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ',
-//       transliteration: 'Rabbi awzi’ni an ashkura ni’mataka allati an’amta ‘alayya.',
-//       translation: 'My Lord, enable me to be grateful for Your favor which You have bestowed upon me.',
-//     },
-//     {
-//       arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
-//       transliteration: 'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina ‘adhaban-nar.',
-//       translation: 'Our Lord, give us in this world that which is good and in the hereafter that which is good, and protect us from the punishment of the Fire.',
-//     },
-//     {
-//       arabic: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
-//       transliteration: 'Ya Muqallibal-quluwbi thabbit qalbi ‘ala dinik.',
-//       translation: 'O Turner of the hearts, make my heart firm upon Your religion.',
-//     },
-//     {
-//       arabic: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
-//       transliteration: 'Rabbishrah li sadri wa yassir li amri.',
-//       translation: 'My Lord, expand for me my chest [with assurance] and ease for me my task.',
-//     },
-//   ];
-//
-//   const [currentDuaIndex, setCurrentDuaIndex] = useState(0);
-//
-//   // Auto-advance Dua index every 2 seconds
-//   useEffect(() => {
-//     const duaTimer = setInterval(() => {
-//       setCurrentDuaIndex((prevIndex) => (prevIndex + 1) % duasList.length);
-//     }, 2000);
-//     return () => clearInterval(duaTimer);
-//   }, [duasList.length]);
-//
-//   // State for task completion toggles
-//   const [tasks, setTasks] = useState([
-//     { id: 1, title: 'pray 5 times', completed: true },
-//     { id: 2, title: 'Read Surah Yaseen', completed: true },
-//     { id: 3, title: 'Take a 5-min dhikr break', completed: false },
-//     { id: 4, title: 'Write a reflection', completed: false },
-//     { id: 5, title: 'Complete your daily plan', completed: false },
-//   ]);
-//
-//   const toggleTask = (id: number) => {
-//     setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-//   };
-//
-//   const activeDua = duasList[currentDuaIndex];
-//
-//   return (
-//     <View className="flex-1 bg-white">
-//       {/* Scrollable Content */}
-//       <ScrollView className="flex-1 px-5 pt-12 pb-8">
-//
-//         {/* 1. Header: Greeting & Avatar */}
-//         <View className="flex-row justify-between items-center mb-6">
-//           {/* Clicking the avatar container opens the menu overlay file */}
-//           <TouchableOpacity
-//             onPress={() => router.push('/menu-overlay')}
-//             className="flex-row items-center gap-3 active:opacity-80"
-//           >
-//             {/* Replaced initial letter 'A' with png image from assets/images */}
-//             <View className="w-12 h-12 rounded-full bg-purple-200 items-center justify-center overflow-hidden border border-purple-300">
-//               <Image
-//                 source={require('../../assets/images/avatar.png')}
-//                 className="w-full h-full"
-//                 resizeMode="cover"
-//               />
-//             </View>
-//             <View>
-//               <Text className="text-xs text-gray-400 font-medium">Assalamu Alaikum,</Text>
-//               <Text className="text-xl font-bold text-gray-900">Aishah!</Text>
-//             </View>
-//           </TouchableOpacity>
-//
-//           <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center border border-gray-100 shadow-sm relative">
-//             <Feather name="bell" size={20} color="#374151" />
-//             <View className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500" />
-//           </TouchableOpacity>
-//         </View>
-//
-//         {/* 2. Prayer Countdown Gradient Card (Using Real Date & Time) */}
-//         <View className="rounded-3xl p-5 mb-6 shadow-sm bg-purple-500">
-//           <View className="flex-row justify-between items-start mb-4">
-//             <View>
-//               <Text className="text-xs text-white/80 mb-0.5">17 Ramadan 1446 AH</Text>
-//               <Text className="text-lg font-bold text-white">{formattedDate}</Text>
-//             </View>
-//             {/* Real-time updating clock */}
-//             <Text className="text-3xl font-bold text-white tracking-tight">{formattedTime}</Text>
-//           </View>
-//
-//           <View className="flex-row justify-between items-center bg-white/20 rounded-full px-4 py-2">
-//             <View className="flex-row items-center gap-1.5">
-//               <Text className="text-xs text-white">☀️ Now Dhuhr time</Text>
-//               <Ionicons name="information-circle-outline" size={14} color="white" />
-//             </View>
-//             <View className="bg-white rounded-full px-3 py-1">
-//               <Text className="text-xs font-semibold text-gray-800">3 Min to Asr Prayer</Text>
-//             </View>
-//           </View>
-//         </View>
-//
-//         {/* 3. Quick Navigation Category Icons */}
-//         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-//           <View className="flex-row gap-4">
-//             {[
-//               { label: 'Solah', icon: <MaterialCommunityIcons name="moon-waning-crescent" size={24} color="#1F2937" /> },
-//               { label: 'Adhkar', icon: <MaterialCommunityIcons name="hands-pray" size={24} color="#1F2937" /> },
-//               { label: 'Quran', icon: <MaterialCommunityIcons name="book-open-page-variant-outline" size={24} color="#1F2937" /> },
-//               { label: 'Tasbih', icon: <MaterialCommunityIcons name="vector-radius" size={24} color="#1F2937" /> },
-//               { label: 'Qibla', icon: <Ionicons name="compass-outline" size={24} color="#1F2937" /> },
-//             ].map((item, index) => (
-//               <TouchableOpacity key={index} className="items-center">
-//                 <View className="w-16 h-16 rounded-2xl bg-gray-50 border border-gray-100 items-center justify-center mb-1.5 shadow-xs">
-//                   {item.icon}
-//                 </View>
-//                 <Text className="text-xs font-medium text-gray-700">{item.label}</Text>
-//               </TouchableOpacity>
-//             ))}
-//           </View>
-//         </ScrollView>
-//
-//         {/* 4. Auto-Scrolling Adhkar / Dua of the Day Card (Switches every 2 seconds) */}
-//         <View className="bg-[#FFF4ED] border border-[#FDE3D3] rounded-3xl p-5 mb-6">
-//           <View className="flex-row justify-between items-center mb-3">
-//             <Text className="text-base font-bold text-gray-900">Dua of the Day</Text>
-//             <TouchableOpacity className="flex-row items-center gap-1">
-//               <Ionicons name="star-outline" size={14} color="#4B5563" />
-//               <Text className="text-xs font-semibold text-gray-600">All Duas</Text>
-//               <Ionicons name="chevron-forward" size={14} color="#4B5563" />
-//             </TouchableOpacity>
-//           </View>
-//
-//           <Text className="text-right text-xl font-serif text-gray-900 mb-2">
-//             {activeDua.arabic}
-//           </Text>
-//           <Text className="text-xs text-gray-500 mb-1.5">
-//             {activeDua.transliteration}
-//           </Text>
-//           <Text className="text-xs text-gray-800 font-medium mb-4">
-//             {activeDua.translation}
-//           </Text>
-//
-//           {/* Dynamic Pagination Indicators */}
-//           <View className="flex-row justify-center items-center gap-1.5">
-//             {duasList.map((_, idx) => (
-//               <View
-//                 key={idx}
-//                 className={`rounded-full transition-all ${
-//                   currentDuaIndex === idx ? 'w-3 h-2.5 bg-gray-700' : 'w-2 h-2 bg-gray-300'
-//                 }`}
-//               />
-//             ))}
-//           </View>
-//         </View>
-//
-//         {/* 5. Today's Tasks Section */}
-//         <View className="mb-20">
-//           <Text className="text-base font-bold text-gray-900 mb-3">Today’s Tasks</Text>
-//           <View className="gap-2.5">
-//             {tasks.map((task) => (
-//               <TouchableOpacity
-//                 key={task.id}
-//                 onPress={() => toggleTask(task.id)}
-//                 className={`flex-row justify-between items-center p-4 rounded-2xl border ${
-//                   task.completed ? 'bg-gray-50/70 border-gray-100 opacity-60' : 'bg-white border-gray-100 shadow-xs'
-//                 }`}
-//               >
-//                 <View className="flex-row items-center gap-3">
-//                   <View className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-//                   <Text className={`text-sm font-medium ${task.completed ? 'line-through text-gray-400' : 'text-gray-800'}`}>
-//                     {task.title}
-//                   </Text>
-//                 </View>
-//                 {task.completed ? (
-//                   <Ionicons name="checkmark" size={16} color="#6B7280" />
-//                 ) : null}
-//               </TouchableOpacity>
-//             ))}
-//           </View>
-//         </View>
-//
-//       </ScrollView>
-//
-//       {/* Bottom Action Bar Fixed Inside home.tsx */}
-//       <View className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center bg-white border-t border-gray-100 pt-3 pb-6 px-4 shadow-lg">
-//         <TouchableOpacity className="items-center">
-//           <Ionicons name="home" size={22} color="#D946EF" />
-//           <Text className="text-[10px] font-semibold text-fuchsia-600 mt-1">Home</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity className="items-center">
-//           <Ionicons name="document-text-outline" size={22} color="#9CA3AF" />
-//           <Text className="text-[10px] font-medium text-gray-400 mt-1">Tracker</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity className="items-center">
-//           <Ionicons name="calendar-outline" size={22} color="#9CA3AF" />
-//           <Text className="text-[10px] font-medium text-gray-400 mt-1">Planner</Text>
-//         </TouchableOpacity>
-//         <TouchableOpacity className="items-center">
-//           <Ionicons name="water-outline" size={22} color="#9CA3AF" />
-//           <Text className="text-[10px] font-medium text-gray-400 mt-1">My Cycle</Text>
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-// }
-
 // src/app/home.tsx
 import { useAuth } from '@/src/context/auth-context';
+import { useDailyContentQuery } from '@/src/hooks/use-daily-content';
 import { useDailyPlanQuery, useToggleTaskCompletedMutation } from '@/src/hooks/use-planner';
+import { usePrayerTimesQuery } from '@/src/hooks/use-prayer';
+import { useTodayTrackerQuery, useTogglePrayerMutation } from '@/src/hooks/use-tracker';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+interface HomeTask {
+  id: string | number;
+  taskId?: string;
+  title: string;
+  time?: string;
+  completed: boolean;
+  isTracker?: boolean;
+  prayerKey?: 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+}
+
+interface DuaItem {
+  title?: string;
+  arabic: string;
+  transliteration: string;
+  translation: string;
+}
+
+// Fallback spiritual duas that rotate automatically
+const DEFAULT_DUAS: DuaItem[] = [
+  {
+    title: 'Dua of the Day',
+    arabic: 'اللهم إنك عفو تحب العفو فاعف عني',
+    transliteration: 'Allahuma innaka afuwun tuhibul afuwa, fahfu ani.',
+    translation: 'O Allah, You are Forgiving and love forgiveness, so forgive me.',
+  },
+  {
+    title: 'Dua of the Day',
+    arabic: 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ',
+    transliteration: 'Rabbi awzi’ni an ashkura ni’mataka allati an’amta ‘alayya.',
+    translation: 'My Lord, enable me to be grateful for Your favor which You have bestowed upon me.',
+  },
+  {
+    title: 'Dua of the Day',
+    arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+    transliteration: 'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina ‘adhaban-nar.',
+    translation: 'Our Lord, give us in this world that which is good and in the hereafter that which is good, and protect us from the punishment of the Fire.',
+  },
+  {
+    title: 'Dua of the Day',
+    arabic: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
+    transliteration: 'Ya Muqallibal-quluwbi thabbit qalbi ‘ala dinik.',
+    translation: 'O Turner of the hearts, make my heart firm upon Your religion.',
+  },
+  {
+    title: 'Dua of the Day',
+    arabic: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
+    transliteration: 'Rabbishrah li sadri wa yassir li amri.',
+    translation: 'My Lord, expand for me my chest [with assurance] and ease for me my task.',
+  },
+];
+
+// Helper to convert "HH:MM AM/PM" into minutes from midnight
+const timeToMinutes = (timeStr?: string): number => {
+  if (!timeStr) return 0;
+  const parts = timeStr.trim().split(' ');
+  const [hoursStr, minutesStr] = (parts[0] || '0:0').split(':');
+  let hours = parseInt(hoursStr, 10) || 0;
+  const minutes = parseInt(minutesStr, 10) || 0;
+  const modifier = (parts[1] || 'AM').toUpperCase();
+  if (modifier === 'PM' && hours < 12) hours += 12;
+  if (modifier === 'AM' && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+};
+
+// Helper to format remaining minutes nicely (e.g. "3 Min" or "1h 20m")
+const formatRemainingTime = (mins: number): string => {
+  if (mins <= 0) return 'Due now';
+  if (mins < 60) return `${mins} Min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+};
 
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useAuth();
 
-  // State for live time clock updates
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  // Update clock every second
+  // 1. Live real-time clock updating every second
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -261,99 +102,238 @@ export default function HomeScreen() {
     return () => clearInterval(timer);
   }, []);
 
-  // Format time string to HH:MM:SS or HH:MM
   const formattedTime = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formattedDate = currentTime.toLocaleDateString('en-US', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
 
-  // Format calendar date dynamically (e.g., "Tuesday, 22nd September")
-  const options: Intl.DateTimeFormatOptions = { weekday: 'long', day: 'numeric', month: 'long' };
-  const formattedDate = currentTime.toLocaleDateString('en-US', options);
+  const todayStr = currentTime.toISOString().split('T')[0];
 
-  // Array of Adhkar / Duas that rotate automatically every 2 seconds
-  const duasList = [
-    {
-      arabic: 'اللهم إنك عفو تحب العفو فاعف عني',
-      transliteration: 'Allahuma innaka afuwun tuhibul afuwa, fahfu ani.',
-      translation: 'O Allah, You are Forgiving and love forgiveness, so forgive me.',
-    },
-    {
-      arabic: 'رَبِّ أَوْزِعْنِي أَنْ أَشْكُرَ نِعْمَتَكَ الَّتِي أَنْعَمْتَ عَلَيَّ',
-      transliteration: 'Rabbi awzi’ni an ashkura ni’mataka allati an’amta ‘alayya.',
-      translation: 'My Lord, enable me to be grateful for Your favor which You have bestowed upon me.',
-    },
-    {
-      arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
-      transliteration: 'Rabbana atina fid-dunya hasanatan wa fil-akhirati hasanatan wa qina ‘adhaban-nar.',
-      translation: 'Our Lord, give us in this world that which is good and in the hereafter that which is good, and protect us from the punishment of the Fire.',
-    },
-    {
-      arabic: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ',
-      transliteration: 'Ya Muqallibal-quluwbi thabbit qalbi ‘ala dinik.',
-      translation: 'O Turner of the hearts, make my heart firm upon Your religion.',
-    },
-    {
-      arabic: 'رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي',
-      transliteration: 'Rabbishrah li sadri wa yassir li amri.',
-      translation: 'My Lord, expand for me my chest [with assurance] and ease for me my task.',
-    },
-  ];
+  // 2. Fetch API Data: Prayer Times, Daily Content, Today's Plan, and Today's Tracker
+  const { data: prayerData } = usePrayerTimesQuery();
+  const { data: dailyContentData } = useDailyContentQuery();
+  const { data: planData, isLoading: isPlanLoading } = useDailyPlanQuery(todayStr);
+  const { data: trackerData } = useTodayTrackerQuery();
+
+  const { mutate: toggleCompletedApi } = useToggleTaskCompletedMutation();
+  const { mutate: togglePrayerApi } = useTogglePrayerMutation();
+
+  // 3. Dynamic Prayer Times & Countdown Calculation
+  const prayerTimes = prayerData?.payload?.prayers;
+  const prayerCalc = useMemo(() => {
+    const fajrTime = prayerTimes?.fajr || '05:25 AM';
+    const sunriseTime = prayerTimes?.sunrise || '06:37 AM';
+    const dhuhrTime = prayerTimes?.dhuhr || '12:40 PM';
+    const asrTime = prayerTimes?.asr || '04:02 PM';
+    const maghribTime = prayerTimes?.maghrib || '06:40 PM';
+    const ishaTime = prayerTimes?.isha || '07:49 PM';
+
+    const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+
+    const fajrMins = timeToMinutes(fajrTime);
+    const sunriseMins = timeToMinutes(sunriseTime);
+    const dhuhrMins = timeToMinutes(dhuhrTime);
+    const asrMins = timeToMinutes(asrTime);
+    const maghribMins = timeToMinutes(maghribTime);
+    const ishaMins = timeToMinutes(ishaTime);
+
+    let currentPrayerName = 'Isha';
+    let currentPrayerIcon = '🌙';
+    let nextPrayerName = 'Fajr';
+    let minutesToNext = 0;
+
+    if (currentMinutes < fajrMins) {
+      currentPrayerName = 'Isha';
+      currentPrayerIcon = '🌙';
+      nextPrayerName = 'Fajr';
+      minutesToNext = fajrMins - currentMinutes;
+    } else if (currentMinutes < sunriseMins) {
+      currentPrayerName = 'Fajr';
+      currentPrayerIcon = '☀️';
+      nextPrayerName = 'Sunrise';
+      minutesToNext = sunriseMins - currentMinutes;
+    } else if (currentMinutes < dhuhrMins) {
+      currentPrayerName = 'Sunrise';
+      currentPrayerIcon = '🌅';
+      nextPrayerName = 'Dhuhr';
+      minutesToNext = dhuhrMins - currentMinutes;
+    } else if (currentMinutes < asrMins) {
+      currentPrayerName = 'Dhuhr';
+      currentPrayerIcon = '☀️';
+      nextPrayerName = 'Asr';
+      minutesToNext = asrMins - currentMinutes;
+    } else if (currentMinutes < maghribMins) {
+      currentPrayerName = 'Asr';
+      currentPrayerIcon = '🌤️';
+      nextPrayerName = 'Maghrib';
+      minutesToNext = maghribMins - currentMinutes;
+    } else if (currentMinutes < ishaMins) {
+      currentPrayerName = 'Maghrib';
+      currentPrayerIcon = '🌇';
+      nextPrayerName = 'Isha';
+      minutesToNext = ishaMins - currentMinutes;
+    } else {
+      currentPrayerName = 'Isha';
+      currentPrayerIcon = '🌙';
+      nextPrayerName = 'Fajr';
+      minutesToNext = 1440 - currentMinutes + fajrMins;
+    }
+
+    // Hijri date calculation
+    let hijri = '17 Ramadan 1446 AH';
+    try {
+      const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      hijri = `${formatter.format(currentTime)} AH`;
+    } catch {
+      hijri = '17 Ramadan 1446 AH';
+    }
+
+    return {
+      currentPrayerName,
+      currentPrayerIcon,
+      nextPrayerName,
+      minutesToNext: Math.max(0, minutesToNext),
+      hijri,
+    };
+  }, [currentTime, prayerTimes]);
+
+  // 4. Daily Content & Dua Carousel
+  const combinedDuasList = useMemo<DuaItem[]>(() => {
+    const serverItem = dailyContentData?.payload?.contents;
+    if (serverItem?.content) {
+      const formattedServerItem: DuaItem = {
+        title: serverItem.title || 'Reflection of the Day',
+        arabic: 'فَاذْكُرُونِي أَذْكُرْكُمْ وَاشْكُرُوا لِي وَلَا تَكْفُرُونِ',
+        transliteration: serverItem.source || 'HerDeen Daily Reflection',
+        translation: serverItem.content,
+      };
+      return [formattedServerItem, ...DEFAULT_DUAS];
+    }
+    return DEFAULT_DUAS;
+  }, [dailyContentData]);
 
   const [currentDuaIndex, setCurrentDuaIndex] = useState(0);
 
-  // Auto-advance Dua index every 2 seconds
   useEffect(() => {
+    if (combinedDuasList.length === 0) return;
     const duaTimer = setInterval(() => {
-      setCurrentDuaIndex((prevIndex) => (prevIndex + 1) % duasList.length);
-    }, 2000);
+      setCurrentDuaIndex((prev) => (prev + 1) % combinedDuasList.length);
+    }, 4000);
     return () => clearInterval(duaTimer);
-  }, [duasList.length]);
+  }, [combinedDuasList.length]);
 
-  // State for task completion toggles
-  const [tasks, setTasks] = useState<Array<{ id: number | string; title: string; completed: boolean }>>([
-    { id: 1, title: 'pray 5 times', completed: true },
-    { id: 2, title: 'Read Surah Yaseen', completed: true },
-    { id: 3, title: 'Take a 5-min dhikr break', completed: false },
-    { id: 4, title: 'Write a reflection', completed: false },
-    { id: 5, title: 'Complete your daily plan', completed: false },
+  const activeDua = combinedDuasList[currentDuaIndex] || DEFAULT_DUAS[0];
+
+  // 5. Today's Tasks
+  const [tasks, setTasks] = useState<HomeTask[]>([
+    { id: 'fajr', title: 'pray Fajr', completed: false, isTracker: true, prayerKey: 'fajr' },
+    { id: 'quran', title: 'Read Surah / Quran', completed: false },
+    { id: 'dhikr', title: 'Take a 5-min dhikr break', completed: false },
+    { id: 'reflection', title: 'Write a reflection', completed: false },
+    { id: 'plan', title: 'Complete your daily plan', completed: false },
   ]);
 
-  const todayStr = currentTime.toISOString().split('T')[0];
-  const { data: planData } = useDailyPlanQuery(todayStr);
-  const { mutate: toggleCompletedApi } = useToggleTaskCompletedMutation();
-
   useEffect(() => {
-    const raw = planData?.payload || planData?.data || planData;
-    const serverTasks = raw?.tasks || (Array.isArray(raw) ? raw : null);
-    if (serverTasks && Array.isArray(serverTasks) && serverTasks.length > 0) {
+    const raw = planData?.payload || planData?.data;
+    const generatedTasks = raw?.generatedPlan || raw?.tasks;
+
+    if (Array.isArray(generatedTasks) && generatedTasks.length > 0) {
       setTasks(
-        serverTasks.map((t: any, idx: number) => ({
-          id: t.id || t._id || t.taskId || idx + 1,
-          title: t.title || t.name || 'Task',
+        generatedTasks.map((t: any, idx: number) => ({
+          id: t._id || t.taskId || t.id || `task-${idx}`,
+          taskId: t._id || t.taskId || t.id,
+          title: t.title || t.name || 'Spiritual task',
+          time: t.time,
           completed: Boolean(t.completed || t.isCompleted),
         }))
       );
+    } else if (trackerData?.payload?.tracker) {
+      const tracker = trackerData.payload.tracker;
+      setTasks([
+        {
+          id: 'fajr',
+          title: 'Fajr Prayer',
+          completed: Boolean(tracker.salah?.fajr),
+          isTracker: true,
+          prayerKey: 'fajr',
+        },
+        {
+          id: 'dhuhr',
+          title: 'Dhuhr Prayer',
+          completed: Boolean(tracker.salah?.dhuhr),
+          isTracker: true,
+          prayerKey: 'dhuhr',
+        },
+        {
+          id: 'asr',
+          title: 'Asr Prayer',
+          completed: Boolean(tracker.salah?.asr),
+          isTracker: true,
+          prayerKey: 'asr',
+        },
+        {
+          id: 'maghrib',
+          title: 'Maghrib Prayer',
+          completed: Boolean(tracker.salah?.maghrib),
+          isTracker: true,
+          prayerKey: 'maghrib',
+        },
+        {
+          id: 'isha',
+          title: 'Isha Prayer',
+          completed: Boolean(tracker.salah?.isha),
+          isTracker: true,
+          prayerKey: 'isha',
+        },
+        {
+          id: 'quran',
+          title: `Quran Recitation (${tracker.quran?.pagesRead || 0} pages)`,
+          completed: (tracker.quran?.pagesRead || 0) > 0,
+        },
+        {
+          id: 'adhkaar',
+          title: 'Morning & Evening Adhkar',
+          completed: Boolean(tracker.adhkaar),
+        },
+      ]);
     }
-  }, [planData]);
+  }, [planData, trackerData]);
 
-  const toggleTask = (id: number | string) => {
-    const targetTask = tasks.find((t) => t.id === id);
-    if (targetTask) {
-      toggleCompletedApi({ date: todayStr, task: targetTask.title });
-    }
+  const toggleTask = (id: string | number) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+      prev.map((t) => {
+        if (t.id === id) {
+          const nextCompleted = !t.completed;
+
+          // If task originates from generatedPlan, call planner API
+          if (t.taskId && nextCompleted) {
+            toggleCompletedApi({ date: todayStr, task: t.taskId });
+          }
+
+          // If task originates from prayer tracker, sync with tracker API
+          if (t.isTracker && t.prayerKey) {
+            togglePrayerApi({ prayer: t.prayerKey, completed: nextCompleted });
+          }
+
+          return { ...t, completed: nextCompleted };
+        }
+        return t;
+      })
     );
   };
-
-  const activeDua = duasList[currentDuaIndex];
 
   return (
     <View className="flex-1 bg-white">
       {/* Scrollable Content */}
-      <ScrollView className="flex-1 px-5 pt-12 pb-8">
-
+      <ScrollView className="flex-1 px-5 pt-12 pb-8" showsVerticalScrollIndicator={false}>
         {/* 1. Header: Greeting & Avatar */}
         <View className="flex-row justify-between items-center mb-6">
-          {/* Clicking the avatar container opens the menu overlay file */}
           <TouchableOpacity
             onPress={() => router.push('/menu-overlay' as any)}
             className="flex-row items-center gap-3 active:opacity-80"
@@ -373,62 +353,74 @@ export default function HomeScreen() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center border border-gray-100 shadow-sm relative">
+          <TouchableOpacity
+            onPress={() => router.push('/(components)/notifications' as any)}
+            className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center border border-gray-100 shadow-sm relative active:opacity-75"
+          >
             <Feather name="bell" size={20} color="#374151" />
             <View className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-red-500" />
           </TouchableOpacity>
         </View>
 
-        {/* 2. Prayer Countdown Gradient Card (Using Real Date & Time) */}
-        <View className="rounded-3xl p-5 mb-6 shadow-sm bg-purple-500">
+        {/* 2. Prayer Countdown Gradient Card (Using Real Backend API & Real-time Clock) */}
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => router.push('/(components)/solah' as any)}
+          className="rounded-3xl p-5 mb-6 shadow-sm bg-purple-500"
+        >
           <View className="flex-row justify-between items-start mb-4">
             <View>
-              <Text className="text-xs text-white/80 mb-0.5">17 Ramadan 1446 AH</Text>
+              <Text className="text-xs text-white/80 mb-0.5">{prayerCalc.hijri}</Text>
               <Text className="text-lg font-bold text-white">{formattedDate}</Text>
             </View>
-            {/* Real-time updating clock */}
             <Text className="text-3xl font-bold text-white tracking-tight">{formattedTime}</Text>
           </View>
 
           <View className="flex-row justify-between items-center bg-white/20 rounded-full px-4 py-2">
             <View className="flex-row items-center gap-1.5">
-              <Text className="text-xs text-white">☀️ Now Dhuhr time</Text>
+              <Text className="text-xs text-white">
+                {prayerCalc.currentPrayerIcon} Now {prayerCalc.currentPrayerName} time
+              </Text>
               <Ionicons name="information-circle-outline" size={14} color="white" />
             </View>
             <View className="bg-white rounded-full px-3 py-1">
-              <Text className="text-xs font-semibold text-gray-800">3 Min to Asr Prayer</Text>
+              <Text className="text-xs font-semibold text-gray-800">
+                {formatRemainingTime(prayerCalc.minutesToNext)} to {prayerCalc.nextPrayerName} Prayer
+              </Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
-        {/* 3. Quick Navigation Category Icons (Linked to individual app folders) */}
+        {/* 3. Quick Navigation Category Icons */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
           <View className="flex-row gap-4">
             {[
               {
                 label: 'Solah',
                 icon: <MaterialCommunityIcons name="moon-waning-crescent" size={24} color="#1F2937" />,
-                route: '/(components)/solah'
+                route: '/(components)/solah',
               },
               {
                 label: 'Adhkar',
                 icon: <MaterialCommunityIcons name="hands-pray" size={24} color="#1F2937" />,
-                route: '/(components)/adhkar'
+                route: '/(components)/adhkar',
               },
               {
                 label: 'Quran',
-                icon: <MaterialCommunityIcons name="book-open-page-variant-outline" size={24} color="#1F2937" />,
-                route: '/(components)/quran'
+                icon: (
+                  <MaterialCommunityIcons name="book-open-page-variant-outline" size={24} color="#1F2937" />
+                ),
+                route: '/(components)/quran',
               },
               {
                 label: 'Tasbih',
                 icon: <MaterialCommunityIcons name="vector-radius" size={24} color="#1F2937" />,
-                route: '/(components)/tasbih'
+                route: '/(components)/tasbih',
               },
               {
                 label: 'Qibla',
                 icon: <Ionicons name="compass-outline" size={24} color="#1F2937" />,
-                route: '/(components)/qibla'
+                route: '/(components)/qibla',
               },
             ].map((item, index) => (
               <TouchableOpacity
@@ -445,10 +437,12 @@ export default function HomeScreen() {
           </View>
         </ScrollView>
 
-        {/* 4. Auto-Scrolling Adhkar / Dua of the Day Card (Switches every 2 seconds) */}
+        {/* 4. Daily Content & Reflection / Dua of the Day Card */}
         <View className="bg-[#FFF4ED] border border-[#FDE3D3] rounded-3xl p-5 mb-6">
           <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-base font-bold text-gray-900">Dua of the Day</Text>
+            <Text className="text-base font-bold text-gray-900">
+              {activeDua.title || 'Dua of the Day'}
+            </Text>
             <TouchableOpacity
               onPress={() => router.push('/(components)/adhkar' as any)}
               className="flex-row items-center gap-1"
@@ -459,23 +453,19 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text className="text-right text-xl font-serif text-gray-900 mb-2">
+          <Text className="text-right text-xl font-serif text-gray-900 mb-2 leading-8">
             {activeDua.arabic}
           </Text>
-          <Text className="text-xs text-gray-500 mb-1.5">
-            {activeDua.transliteration}
-          </Text>
-          <Text className="text-xs text-gray-800 font-medium mb-4">
-            {activeDua.translation}
-          </Text>
+          <Text className="text-xs text-gray-500 mb-1.5">{activeDua.transliteration}</Text>
+          <Text className="text-xs text-gray-800 font-medium mb-4 leading-5">{activeDua.translation}</Text>
 
-          {/* Dynamic Pagination Indicators */}
+          {/* Pagination Indicators */}
           <View className="flex-row justify-center items-center gap-1.5">
-            {duasList.map((_, idx) => (
+            {combinedDuasList.map((_, idx) => (
               <View
                 key={idx}
                 className={`rounded-full transition-all ${
-                  currentDuaIndex === idx ? 'w-3 h-2.5 bg-gray-700' : 'w-2 h-2 bg-gray-300'
+                  currentDuaIndex === idx ? 'w-3 h-2 bg-gray-700' : 'w-2 h-2 bg-gray-300'
                 }`}
               />
             ))}
@@ -483,48 +473,81 @@ export default function HomeScreen() {
         </View>
 
         {/* 5. Today's Tasks Section */}
-        <View className="mb-20">
-          <Text className="text-base font-bold text-gray-900 mb-3">Today’s Tasks</Text>
+        <View className="mb-24">
+          <View className="flex-row justify-between items-center mb-3">
+            <Text className="text-base font-bold text-gray-900">Today’s Tasks</Text>
+            {isPlanLoading && <ActivityIndicator size="small" color="#D946EF" />}
+          </View>
+
           <View className="gap-2.5">
             {tasks.map((task) => (
               <TouchableOpacity
                 key={task.id}
                 onPress={() => toggleTask(task.id)}
                 className={`flex-row justify-between items-center p-4 rounded-2xl border ${
-                  task.completed ? 'bg-gray-50/70 border-gray-100 opacity-60' : 'bg-white border-gray-100 shadow-xs'
+                  task.completed
+                    ? 'bg-gray-50/70 border-gray-100 opacity-60'
+                    : 'bg-white border-gray-100 shadow-xs'
                 }`}
               >
-                <View className="flex-row items-center gap-3">
-                  <View className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                  <Text className={`text-sm font-medium ${task.completed ? 'line-through text-gray-400' : 'text-gray-800'}`}>
-                    {task.title}
-                  </Text>
+                <View className="flex-row items-center gap-3 flex-1 pr-2">
+                  <View
+                    className={`w-2 h-2 rounded-full ${task.completed ? 'bg-gray-300' : 'bg-fuchsia-500'}`}
+                  />
+                  <View className="flex-1">
+                    <Text
+                      className={`text-sm font-medium ${
+                        task.completed ? 'line-through text-gray-400' : 'text-gray-800'
+                      }`}
+                    >
+                      {task.title}
+                    </Text>
+                    {task.time ? (
+                      <Text className="text-[11px] text-gray-400 mt-0.5">{task.time}</Text>
+                    ) : null}
+                  </View>
                 </View>
+
                 {task.completed ? (
-                  <Ionicons name="checkmark" size={16} color="#6B7280" />
-                ) : null}
+                  <View className="w-6 h-6 rounded-full bg-emerald-50 items-center justify-center border border-emerald-200">
+                    <Ionicons name="checkmark" size={16} color="#059669" />
+                  </View>
+                ) : (
+                  <View className="w-6 h-6 rounded-full border border-gray-300" />
+                )}
               </TouchableOpacity>
             ))}
           </View>
         </View>
-
       </ScrollView>
 
-      {/* Bottom Action Bar Fixed Inside home.tsx */}
+      {/* 6. Fixed Bottom Action Bar */}
       <View className="absolute bottom-0 left-0 right-0 flex-row justify-around items-center bg-white border-t border-gray-100 pt-3 pb-6 px-4 shadow-lg">
         <TouchableOpacity className="items-center">
           <Ionicons name="home" size={22} color="#D946EF" />
           <Text className="text-[10px] font-semibold text-fuchsia-600 mt-1">Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="items-center">
+
+        <TouchableOpacity
+          onPress={() => router.push('/(components)/prayer-reminders' as any)}
+          className="items-center active:opacity-75"
+        >
           <Ionicons name="document-text-outline" size={22} color="#9CA3AF" />
           <Text className="text-[10px] font-medium text-gray-400 mt-1">Tracker</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="items-center">
+
+        <TouchableOpacity
+          onPress={() => router.push('/(components)/daily-preferences' as any)}
+          className="items-center active:opacity-75"
+        >
           <Ionicons name="calendar-outline" size={22} color="#9CA3AF" />
           <Text className="text-[10px] font-medium text-gray-400 mt-1">Planner</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="items-center">
+
+        <TouchableOpacity
+          onPress={() => router.push('/(tabs)/cycle' as any)}
+          className="items-center active:opacity-75"
+        >
           <Ionicons name="water-outline" size={22} color="#9CA3AF" />
           <Text className="text-[10px] font-medium text-gray-400 mt-1">My Cycle</Text>
         </TouchableOpacity>

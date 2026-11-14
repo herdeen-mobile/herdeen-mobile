@@ -6,7 +6,11 @@
 
 import { apiClient } from '@/src/services/api/api-client';
 import { WorkerService } from '@/src/services/api/worker-service';
-import { PrayerSettingsRequest, PrayerSettingsResponse } from '@/src/types/prayer';
+import {
+  PrayerSettingsRequest,
+  PrayerSettingsResponse,
+  PrayerTimesResponse,
+} from '@/src/types/prayer';
 
 export const PrayerService = {
   /**
@@ -31,11 +35,10 @@ export const PrayerService = {
   },
 
   /**
-   * Fetch configured Prayer Times / Calculations
+   * Fetch configured Prayer Times for today (GET /islamic/prayer-times)
    */
-  async getPrayerTimes(): Promise<any> {
-    const response = await apiClient.get('/prayer/times');
+  async getPrayerTimes(): Promise<PrayerTimesResponse> {
+    const response = await apiClient.get<PrayerTimesResponse>('/islamic/prayer-times');
     return response.data;
   },
 };
-

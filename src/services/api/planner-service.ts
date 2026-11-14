@@ -62,10 +62,10 @@ export const PlannerService = {
   },
 
   /**
-   * 4. Edit Task (PATCH /planner/edit/:date/:taskId)
+   * 4. Edit Task (PUT /planner/edit/:date/:taskId)
    */
   async editTask(date: string, taskId: string, data: EditTaskRequest): Promise<any> {
-    const response = await apiClient.patch(`/planner/edit/${date}/${taskId}`, data);
+    const response = await apiClient.put(`/planner/edit/${date}/${taskId}`, data);
     return response.data;
   },
 
@@ -78,10 +78,10 @@ export const PlannerService = {
   },
 
   /**
-   * 6. Toggle Completed Status (PATCH /planner/completed/:date/:task)
+   * 6. Toggle Completed Status (PUT /planner/completed/:date/:task)
    */
   async toggleCompleted(date: string, task: string): Promise<any> {
-    const response = await apiClient.patch(`/planner/completed/${date}/${encodeURIComponent(task)}`);
+    const response = await apiClient.put(`/planner/completed/${date}/${encodeURIComponent(task)}`);
     return response.data;
   },
 

@@ -1,5 +1,5 @@
 /**
- * Types for Prayer Settings & Solah Reminders Background Jobs
+ * Types for Prayer Settings, Prayer Times & Solah Reminders Background Jobs
  */
 
 export interface PrayerSettingsData {
@@ -24,3 +24,23 @@ export interface PrayerSettingsResponse {
   [key: string]: any;
 }
 
+export interface PrayerTimes {
+  fajr: string;
+  sunrise: string;
+  dhuhr: string;
+  asr: string;
+  maghrib: string;
+  isha: string;
+}
+
+export interface PrayerTimesPayload {
+  date: string;
+  timezone: string;
+  prayers: PrayerTimes;
+}
+
+export interface PrayerTimesResponse {
+  success: boolean;
+  payload: PrayerTimesPayload;
+  timeStamp?: string;
+}

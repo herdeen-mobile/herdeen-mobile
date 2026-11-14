@@ -37,6 +37,9 @@ export interface PlannerTask {
 export interface DailyPlan {
   date?: string;
   tasks?: PlannerTask[];
+  generatedPlan?: PlannerTask[];
+  completedTasks?: string[];
+  status?: string;
   summary?: string;
   userInputs?: PlannerUserInputs;
   [key: string]: any;

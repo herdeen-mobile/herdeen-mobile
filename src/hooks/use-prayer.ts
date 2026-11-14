@@ -5,7 +5,12 @@
 import { getErrorMessage } from '@/src/services/api/api-client';
 import { PrayerService } from '@/src/services/api/prayer-service';
 import { WorkerService } from '@/src/services/api/worker-service';
-import { PrayerSettingsData, PrayerSettingsRequest, PrayerSettingsResponse } from '@/src/types/prayer';
+import {
+  PrayerSettingsData,
+  PrayerSettingsRequest,
+  PrayerSettingsResponse,
+  PrayerTimesResponse,
+} from '@/src/types/prayer';
 import { WorkerHealthResponse } from '@/src/types/worker';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -42,6 +47,25 @@ export const useUpdatePrayerSettingsMutation = () => {
       queryClient.invalidateQueries({ queryKey: PRAYER_QUERY_KEYS.settings() });
       queryClient.invalidateQueries({ queryKey: PRAYER_QUERY_KEYS.times() });
     },
+  });
+};
+
+/**
+ * Hook to fetch today's prayer times (GET /islamic/prayer-times)
+ */
+export const usePrayerTimesQuery = (options?: { enabled?: boolean }) => {
+  return useQuery<PrayerTimesResponse, Error>({
+    queryKey: PRAYER_QUERY_KEYS.times(),
+    queryFn: async () => {
+      try {
+        return await PrayerService.getPrayerTimes();
+      } catch (err) {
+        throw new Error(getErrorMessage(err));
+      }
+    },
+    enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    retry: 2,
   });
 };
 
