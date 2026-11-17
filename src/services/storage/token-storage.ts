@@ -130,5 +130,10 @@ export const TokenStorage = {
     await removeItem(ENV.TOKEN_STORAGE_KEYS.USER);
     await removeItem(ENV.TOKEN_STORAGE_KEYS.PENDING_EMAIL);
   },
+
+  // General Key-Value Storage
+  getItem,
+  setItem,
+  removeItem,
 };
 

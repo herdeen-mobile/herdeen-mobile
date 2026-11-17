@@ -6,13 +6,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OnboardingformScreen = () => {
   const [step, setStep] = useState<number>(0);
+  const [lifeStage, setLifeStage] = useState<string | undefined>(undefined);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', padding: 10 }}>
       {step === 0 ? (
-        <OnboardingFormOne onNext={() => setStep(1)} />
+        <OnboardingFormOne
+          selectedLifeStage={lifeStage}
+          onNext={(selected) => {
+            setLifeStage(selected);
+            setStep(1);
+          }}
+        />
       ) : (
-        <OnboardingFormTwo />
+        <OnboardingFormTwo
+          lifeStage={lifeStage}
+          onBack={() => setStep(0)}
+        />
       )}
     </SafeAreaView>
   );

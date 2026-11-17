@@ -3,7 +3,7 @@
  */
 
 import { useAuth } from '@/src/context/auth-context';
-import { getErrorMessage } from '@/src/services/api/api-client';
+import { getErrorMessage } from '@/src/utils/error-handler';
 import { AuthService } from '@/src/services/api/auth-service';
 import {
   LoginRequest,
@@ -19,7 +19,7 @@ import {
   ResetPasswordRequest,
   ResetPasswordResponse,
 } from '@/src/types/auth';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
  * 1. Pre-register hook (POST /auth/pre-register)
@@ -182,4 +182,61 @@ export const useLogoutMutation = () => {
     },
   });
 };
+
+/**
+ * 7. Update User AI & Goals Data (PATCH /auth/user-data)
+ */
+export const useUpdateUserDataMutation = () => {
+  const { updateUser } = useAuth();
+
+  return useMutation<any, Error, { lifeStage?: string; deenGoals?: string[]; [key: string]: any }>({
+    mutationFn: async (data) => {
+      try {
+        return await AuthService.updateUserData(data);
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
+    onSuccess: (_, variables) => {
+      updateUser(variables);
+    },
+  });
+};
+
+/**
+ * 8. Clear Cache & Reset User Tracking Data (POST /clear-cache)
+ */
+export const useClearCacheMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, void>({
+    mutationFn: async () => {
+      try {
+        return await AuthService.clearCache();
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries();
+    },
+  });
+};
+
+/**
+ * 9. Change Password (PATCH /auth/admin/password)
+ */
+export const useChangePasswordMutation = () => {
+  return useMutation<any, Error, { currentPassword?: string; password: string; confirmPassword: string }>({
+    mutationFn: async (data) => {
+      try {
+        return await AuthService.changePassword(data);
+      } catch (error) {
+        throw new Error(getErrorMessage(error));
+      }
+    },
+  });
+};
+
+
 

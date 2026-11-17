@@ -1,21 +1,23 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 export default function MorningEveningAdhkarScreen() {
   const router = useRouter();
 
   const sections = [
     {
-      title: 'Morning Adhkar',
+      title: 'Words of remembrance for morning and evening',
+      subtitle: 'Authentic Hisn al-Muslim supplications',
       icon: <MaterialCommunityIcons name="weather-night-partly-cloudy" size={32} color="#D946EF" />,
-      route: '/(components)/adhkar/list?category=Morning+Adhkar',
+      route: '/(components)/adhkar/reader?title=Words+of+remembrance+for+morning+and+evening&id=27',
     },
     {
-      title: 'Evening Adhkar',
-      icon: <MaterialCommunityIcons name="hands-pray" size={32} color="#D946EF" />,
-      route: '/(components)/adhkar/list?category=Evening+Adhkar',
+      title: 'What to say before sleeping',
+      subtitle: 'Authentic night & sleep supplications',
+      icon: <MaterialCommunityIcons name="bed-outline" size={32} color="#D946EF" />,
+      route: '/(components)/adhkar/reader?title=What+to+say+before+sleeping&id=28',
     },
   ];
 
@@ -41,7 +43,10 @@ export default function MorningEveningAdhkarScreen() {
               onPress={() => router.push(item.route as any)}
               className="bg-gray-50/70 border border-gray-100/80 rounded-3xl p-6 flex-row items-center justify-between shadow-2xs"
             >
-              <Text className="text-base font-bold text-gray-900">{item.title}</Text>
+              <View className="flex-1 pr-3">
+                <Text className="text-base font-bold text-gray-900">{item.title}</Text>
+                <Text className="text-xs text-gray-400 mt-1">{item.subtitle}</Text>
+              </View>
               <View className="bg-purple-50 p-3 rounded-2xl border border-purple-100/50">
                 {item.icon}
               </View>

@@ -2,7 +2,7 @@
  * TanStack React Query Hooks for Daily Content (Reflections, Duas, Spiritual Reminders)
  */
 
-import { getErrorMessage } from '@/src/services/api/api-client';
+import { getErrorMessage } from '@/src/utils/error-handler';
 import { DailyContentService } from '@/src/services/api/daily-content-service';
 import { DailyContentResponse } from '@/src/types/daily-content';
 import { useQuery } from '@tanstack/react-query';

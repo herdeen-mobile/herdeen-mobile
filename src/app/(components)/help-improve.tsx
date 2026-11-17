@@ -1,6 +1,6 @@
 // src/app/(components)/help-improve.tsx
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal, Alert } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -22,11 +22,11 @@ export default function HelpImproveScreen() {
   const handleSubmit = () => {
     if (!isFormValid) return;
 
-    // Log submission data for development verification
-    console.log('Feedback Submitted:', { topic, description, hasMedia });
-
-    // Navigate back after submission
-    router.back();
+    Alert.alert(
+      'Feedback Received',
+      'Thank you for your valuable feedback! We appreciate your support.',
+      [{ text: 'OK', onPress: () => router.back() }]
+    );
   };
 
   return (

@@ -1,13 +1,38 @@
 // src/app/(components)/account-security.tsx
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Input } from '../../../components/custom/input';
-import { Button } from '../../../components/custom/button';
+import { useClearCacheMutation } from '@/src/hooks/use-auth';
+import { getErrorMessage } from '@/src/utils/error-handler';
 
 export default function AccountSecurityScreen() {
   const router = useRouter();
+  const { mutate: clearCache, isPending: isClearing } = useClearCacheMutation();
+
+  const handleResetData = () => {
+    Alert.alert(
+      'Reset Data',
+      'This will clear your Salah tracking, Qur’an logs, and Adhkar progress. Are you sure you want to proceed?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: () => {
+            clearCache(undefined, {
+              onSuccess: () => {
+                Alert.alert('Data Reset', 'Your tracking data has been cleared successfully.');
+              },
+              onError: (err) => {
+                Alert.alert('Reset Failed', getErrorMessage(err));
+              },
+            });
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View className="flex-1 bg-background">
@@ -27,7 +52,7 @@ export default function AccountSecurityScreen() {
         <View className="gap-4">
           {/* Password Item */}
           <TouchableOpacity
-            onPress={() => router.push('/change-password')}
+            onPress={() => router.push('/(components)/change-password' as any)}
             className="flex-row items-center justify-between p-4 bg-card rounded-2xl border border-border"
           >
             <View className="flex-row items-center flex-1 mr-4">
@@ -44,14 +69,17 @@ export default function AccountSecurityScreen() {
 
           {/* Reset Data Item */}
           <TouchableOpacity
-            onPress={() => {
-              console.log('Reset Data pressed');
-            }}
+            onPress={handleResetData}
+            disabled={isClearing}
             className="flex-row items-center justify-between p-4 bg-card rounded-2xl border border-border"
           >
             <View className="flex-row items-center flex-1 mr-4">
               <View className="w-10 h-10 rounded-xl bg-secondary items-center justify-center mr-3">
-                <Ionicons name="refresh-outline" size={20} color="#6B7280" />
+                {isClearing ? (
+                  <ActivityIndicator size="small" color="#9333EA" />
+                ) : (
+                  <Ionicons name="refresh-outline" size={20} color="#6B7280" />
+                )}
               </View>
               <View className="flex-1">
                 <Text className="text-sm font-bold text-foreground">Reset Data</Text>

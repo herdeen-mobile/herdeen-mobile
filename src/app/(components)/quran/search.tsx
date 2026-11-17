@@ -1,13 +1,50 @@
-//quran/search.tsx
+// quran/search.tsx
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useSurahsQuery } from '@/src/hooks/use-quran';
 
 export default function SearchScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [recentSearches, setRecentSearches] = useState(['Fathia', 'Fathia', 'Fathia']);
+  const [recentSearches, setRecentSearches] = useState(['Al-Fatihah', 'Al-Baqarah', 'Ya-Sin']);
+
+  const { data: surahs, isLoading } = useSurahsQuery();
+
+  const filteredSurahs = (surahs || []).filter((surah) => {
+    if (!searchQuery.trim()) return false;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      surah.englishName.toLowerCase().includes(q) ||
+      surah.englishNameTranslation.toLowerCase().includes(q) ||
+      surah.name.includes(q) ||
+      surah.number.toString() === q
+    );
+  });
+
+  const handleSelectSurah = (surahNumber: number, surahName: string) => {
+    if (!recentSearches.includes(surahName)) {
+      setRecentSearches((prev) => [surahName, ...prev.slice(0, 9)]);
+    }
+    router.push({
+      pathname: '/(components)/quran/reader',
+      params: { surahNumber: surahNumber.toString() },
+    });
+  };
+
+  const handleSelectRecent = (name: string) => {
+    const found = (surahs || []).find(
+      (s) =>
+        s.englishName.toLowerCase() === name.toLowerCase() ||
+        s.name.includes(name)
+    );
+    if (found) {
+      handleSelectSurah(found.number, found.englishName);
+    } else {
+      setSearchQuery(name);
+    }
+  };
 
   return (
     <View className="flex-1 bg-white pt-12 px-5">
@@ -36,30 +73,72 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-sm font-semibold text-gray-500">Recent Searches</Text>
-        <TouchableOpacity onPress={() => setRecentSearches([])}>
-          <Text className="text-sm font-semibold text-purple-600">Clear all</Text>
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView className="flex-1">
-        {recentSearches.map((item, index) => (
-          <View key={index} className="py-3.5 flex-row items-center justify-between border-b border-gray-100">
-            <View className="flex-row items-center gap-3">
-              <Ionicons name="time-outline" size={18} color="#9CA3AF" />
-              <Text className="text-base text-gray-800">{item}</Text>
+      {/* Show search results if user is typing */}
+      {searchQuery.trim().length > 0 ? (
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          {isLoading && (
+            <View className="py-8 items-center">
+              <ActivityIndicator size="small" color="#9333EA" />
             </View>
+          )}
+
+          {!isLoading && filteredSurahs.length === 0 && (
+            <View className="py-12 items-center">
+              <Text className="text-sm text-gray-400">No surahs found matching "{searchQuery}"</Text>
+            </View>
+          )}
+
+          {filteredSurahs.map((surah) => (
             <TouchableOpacity
-              onPress={() =>
-                setRecentSearches(recentSearches.filter((_, i) => i !== index))
-              }
+              key={surah.number}
+              onPress={() => handleSelectSurah(surah.number, surah.englishName)}
+              className="py-3.5 flex-row items-center justify-between border-b border-gray-100"
             >
-              <Ionicons name="close" size={18} color="#9CA3AF" />
+              <View className="flex-row items-center gap-3">
+                <View className="w-8 h-8 rounded-full bg-purple-50 items-center justify-center">
+                  <Text className="text-xs font-bold text-purple-700">{surah.number}</Text>
+                </View>
+                <View>
+                  <Text className="text-sm font-semibold text-gray-900">{surah.englishName}</Text>
+                  <Text className="text-xs text-gray-400">{surah.englishNameTranslation} • {surah.numberOfAyahs} verses</Text>
+                </View>
+              </View>
+              <Text className="text-base font-bold text-gray-800">{surah.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      ) : (
+        <>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-sm font-semibold text-gray-500">Recent Searches</Text>
+            <TouchableOpacity onPress={() => setRecentSearches([])}>
+              <Text className="text-sm font-semibold text-purple-600">Clear all</Text>
             </TouchableOpacity>
           </View>
-        ))}
-      </ScrollView>
+
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            {recentSearches.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleSelectRecent(item)}
+                className="py-3.5 flex-row items-center justify-between border-b border-gray-100"
+              >
+                <View className="flex-row items-center gap-3">
+                  <Ionicons name="time-outline" size={18} color="#9CA3AF" />
+                  <Text className="text-base text-gray-800">{item}</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={() =>
+                    setRecentSearches(recentSearches.filter((_, i) => i !== index))
+                  }
+                >
+                  <Ionicons name="close" size={18} color="#9CA3AF" />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 }

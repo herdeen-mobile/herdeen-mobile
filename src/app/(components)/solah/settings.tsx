@@ -1,14 +1,49 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { useUpdatePrayerSettingsMutation } from '@/src/hooks/use-prayer';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 export default function SolahSettingsScreen() {
   const router = useRouter();
+  const { mutate: updatePrayerSettings, isPending: isUpdating } = useUpdatePrayerSettingsMutation();
+
   const [adhanSound, setAdhanSound] = useState(false);
   const [vibration, setVibration] = useState(true);
   const [jumuahReminder, setJumuahReminder] = useState(true);
   const [tahajjudReminder, setTahajjudReminder] = useState(false);
+
+  const handleToggleAdhanSound = (val: boolean) => {
+    setAdhanSound(val);
+    updatePrayerSettings({
+      data: { adhanSound: val },
+      wakeWorker: true,
+    });
+  };
+
+  const handleToggleVibration = (val: boolean) => {
+    setVibration(val);
+    updatePrayerSettings({
+      data: { remindersEnabled: val },
+      wakeWorker: true,
+    });
+  };
+
+  const handleToggleJumuah = (val: boolean) => {
+    setJumuahReminder(val);
+    updatePrayerSettings({
+      data: { jumuahReminder: val },
+      wakeWorker: true,
+    });
+  };
+
+  const handleToggleTahajjud = (val: boolean) => {
+    setTahajjudReminder(val);
+    updatePrayerSettings({
+      data: { tahajjudReminder: val },
+      wakeWorker: true,
+    });
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -70,14 +105,23 @@ export default function SolahSettingsScreen() {
         </View>
 
         {/* Section 2: Adhan & Sound */}
-        <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Adhan & Sound</Text>
+        <View className="flex-row items-center justify-between mb-2">
+          <Text className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Adhan & Sound
+          </Text>
+          {isUpdating && <ActivityIndicator size="small" color="#D946EF" />}
+        </View>
         <View className="bg-gray-50/50 rounded-2xl border border-gray-100 mb-6 overflow-hidden">
           <View className="flex-row justify-between items-center p-4 border-b border-gray-100">
             <View className="flex-row items-center gap-3">
               <Ionicons name="volume-high-outline" size={20} color="#4B5563" />
               <Text className="text-sm font-semibold text-gray-800">Adhan sound</Text>
             </View>
-            <Switch value={adhanSound} onValueChange={setAdhanSound} trackColor={{ true: '#D946EF', false: '#E5E7EB' }} />
+            <Switch
+              value={adhanSound}
+              onValueChange={handleToggleAdhanSound}
+              trackColor={{ true: '#D946EF', false: '#E5E7EB' }}
+            />
           </View>
 
           <View className="flex-row justify-between items-center p-4">
@@ -85,7 +129,11 @@ export default function SolahSettingsScreen() {
               <Ionicons name="phone-portrait-outline" size={20} color="#4B5563" />
               <Text className="text-sm font-semibold text-gray-800">Vibration</Text>
             </View>
-            <Switch value={vibration} onValueChange={setVibration} trackColor={{ true: '#D946EF', false: '#E5E7EB' }} />
+            <Switch
+              value={vibration}
+              onValueChange={handleToggleVibration}
+              trackColor={{ true: '#D946EF', false: '#E5E7EB' }}
+            />
           </View>
         </View>
 
@@ -97,7 +145,11 @@ export default function SolahSettingsScreen() {
               <MaterialCommunityIcons name="home-roof" size={20} color="#4B5563" />
               <Text className="text-sm font-semibold text-gray-800">Jumu’ah reminder</Text>
             </View>
-            <Switch value={jumuahReminder} onValueChange={setJumuahReminder} trackColor={{ true: '#D946EF', false: '#E5E7EB' }} />
+            <Switch
+              value={jumuahReminder}
+              onValueChange={handleToggleJumuah}
+              trackColor={{ true: '#D946EF', false: '#E5E7EB' }}
+            />
           </View>
 
           <View className="flex-row justify-between items-center p-4">
@@ -105,7 +157,11 @@ export default function SolahSettingsScreen() {
               <MaterialCommunityIcons name="bed-outline" size={20} color="#4B5563" />
               <Text className="text-sm font-semibold text-gray-800">Tahajjud reminder</Text>
             </View>
-            <Switch value={tahajjudReminder} onValueChange={setTahajjudReminder} trackColor={{ true: '#D946EF', false: '#E5E7EB' }} />
+            <Switch
+              value={tahajjudReminder}
+              onValueChange={handleToggleTahajjud}
+              trackColor={{ true: '#D946EF', false: '#E5E7EB' }}
+            />
           </View>
         </View>
 

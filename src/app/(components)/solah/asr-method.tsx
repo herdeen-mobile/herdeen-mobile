@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useUpdatePrayerSettingsMutation } from '@/src/hooks/use-prayer';
 
 export default function AsrMethodScreen() {
   const router = useRouter();
   const [selectedAsr, setSelectedAsr] = useState('Shafi');
+  const { mutate: updateSettings, isPending } = useUpdatePrayerSettingsMutation();
 
   const asrMethods = [
     { title: 'Shafi', desc: 'Standard calculation method (Standard juristic views)' },
     { title: 'Hanafi', desc: 'Later shadow length calculation method' },
   ];
+
+  const handleSelect = (asrTitle: string) => {
+    setSelectedAsr(asrTitle);
+    updateSettings(
+      {
+        data: { madhab: asrTitle },
+        wakeWorker: true,
+      },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+      }
+    );
+  };
 
   return (
     <View className="flex-1 bg-white">
@@ -22,6 +39,7 @@ export default function AsrMethodScreen() {
             <Ionicons name="arrow-back" size={20} color="#1F2937" />
           </TouchableOpacity>
           <Text className="text-xl font-bold text-gray-900">Asr Method</Text>
+          {isPending && <ActivityIndicator size="small" color="#9333EA" style={{ marginLeft: 8 }} />}
         </View>
 
         {/* Asr Options */}
@@ -31,7 +49,8 @@ export default function AsrMethodScreen() {
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => setSelectedAsr(item.title)}
+                disabled={isPending}
+                onPress={() => handleSelect(item.title)}
                 className={`flex-row justify-between items-center p-4 rounded-2xl border ${
                   isSelected ? 'bg-purple-50/40 border-purple-200' : 'bg-white border-gray-100'
                 }`}

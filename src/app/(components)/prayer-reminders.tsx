@@ -1,9 +1,10 @@
 // src/app/(components)/prayer-reminders.tsx
 import { useUpdatePrayerSettingsMutation } from '@/src/hooks/use-prayer';
+import { getErrorMessage } from '@/src/utils/error-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../../components/custom/button';
 
 export default function PrayerRemindersScreen() {
@@ -30,13 +31,23 @@ export default function PrayerRemindersScreen() {
     updateSettings(
       {
         data: {
-          remindersEnabled: true,
+          remindersEnabled: reminderType !== 'silent',
+          adhanSound: reminderType === 'sound',
+          reminderType,
+          fajr: prayers.fajr,
+          dhuhr: prayers.dhuhr,
+          asr: prayers.asr,
+          maghrib: prayers.maghrib,
+          isha: prayers.isha,
         },
         wakeWorker: true,
       },
       {
-        onSettled: () => {
+        onSuccess: () => {
           router.back();
+        },
+        onError: (err) => {
+          Alert.alert('Save Failed', getErrorMessage(err));
         },
       }
     );

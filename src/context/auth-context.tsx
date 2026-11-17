@@ -14,6 +14,7 @@ interface AuthContextType {
   pendingEmail: string;
   setPendingEmail: (email: string) => void;
   setAuthSession: (accessToken: string, refreshToken?: string, user?: User) => Promise<void>;
+  updateUser: (updatedFields: Partial<User>) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -63,6 +64,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAuthenticated(true);
   };
 
+  const updateUser = async (updatedFields: Partial<User>) => {
+    setUser((prev) => {
+      const merged: User = prev ? { ...prev, ...updatedFields } : ({ email: '', ...updatedFields } as User);
+      TokenStorage.setUser(merged);
+      return merged;
+    });
+  };
+
   const logout = async () => {
     await TokenStorage.clearAll();
     setUser(null);
@@ -79,6 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         pendingEmail,
         setPendingEmail,
         setAuthSession,
+        updateUser,
         logout,
       }}
     >

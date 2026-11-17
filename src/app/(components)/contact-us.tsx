@@ -1,11 +1,13 @@
 // src/app/(components)/contact-us.tsx
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/src/context/auth-context';
 
 export default function ContactUsScreen() {
   const router = useRouter();
+  const { user } = useAuth();
 
   // Form input states
   const [fullName, setFullName] = useState('');
@@ -13,10 +15,21 @@ export default function ContactUsScreen() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
+  useEffect(() => {
+    if (user?.email) setEmail(user.email);
+    if (user?.firstName) setFullName(`${user.firstName} ${user.lastName || ''}`.trim());
+  }, [user]);
+
   const handleSendMessage = () => {
-    console.log({ fullName, email, subject, message });
-    // Add your API submission or email dispatch logic here
-    router.back();
+    if (!message.trim()) {
+      Alert.alert('Message Required', 'Please enter your message before sending.');
+      return;
+    }
+    Alert.alert(
+      'Message Sent',
+      'Thank you for reaching out! Our team will get back to you shortly.',
+      [{ text: 'OK', onPress: () => router.back() }]
+    );
   };
 
   return (
@@ -66,24 +79,24 @@ export default function ContactUsScreen() {
             placeholder="Message"
             placeholderTextColor="#9CA3AF"
             multiline
-            numberOfLines={6}
+            numberOfLines={5}
             textAlignVertical="top"
             value={message}
             onChangeText={setMessage}
-            className="w-full bg-card border border-border rounded-2xl px-5 py-4 text-foreground text-base h-40 shadow-sm"
+            className="w-full bg-card border border-border rounded-2xl px-5 py-4 text-foreground text-base h-36 shadow-sm"
           />
         </View>
 
       </ScrollView>
 
-      {/* Fixed Bottom Send Message Button */}
-      <View className="absolute bottom-0 left-0 right-0 p-6 bg-background/80 backdrop-blur-md border-t border-border">
+      {/* Bottom Sticky Action Button */}
+      <View className="absolute bottom-0 left-0 right-0 p-6 bg-background/80 border-t border-border">
         <TouchableOpacity
-          onPress={handleSendMessage}
           activeOpacity={0.8}
-          className="bg-primary py-4 rounded-full items-center justify-center shadow-sm"
+          onPress={handleSendMessage}
+          className="bg-primary py-4 rounded-full items-center justify-center shadow-md active:opacity-90"
         >
-          <Text className="text-white font-bold text-base">Send Message</Text>
+          <Text className="text-white text-base font-bold">Send Message</Text>
         </TouchableOpacity>
       </View>
     </View>

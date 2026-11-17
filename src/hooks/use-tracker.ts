@@ -2,7 +2,7 @@
  * TanStack React Query Hooks for Ibadah Tracker
  */
 
-import { getErrorMessage } from '@/src/services/api/api-client';
+import { getErrorMessage } from '@/src/utils/error-handler';
 import { TrackerService } from '@/src/services/api/tracker-service';
 import {
   TodayTrackerResponse,

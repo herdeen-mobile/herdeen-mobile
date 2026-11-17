@@ -1,4 +1,5 @@
 import { CheckIcon } from '@/components/ui/icon';
+import { useUpdateUserDataMutation } from '@/src/hooks/use-auth';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -6,28 +7,61 @@ import AuthHeader from '../auth-header';
 import { Button } from '../custom/button';
 import { Checkbox, CheckboxIcon, CheckboxIndicator } from '../ui/checkbox';
 
+interface OnboardingFormTwoProps {
+  lifeStage?: string;
+  onBack?: () => void;
+}
 
+const OnboardingFormTwo = ({ lifeStage }: OnboardingFormTwoProps) => {
+  const router = useRouter();
+  const { mutate: updateUserData, isPending } = useUpdateUserDataMutation();
 
-const OnboardingFormTwo = () => {
+  const [selectedGoals, setSelectedGoals] = useState<string[]>([
+    "Prayer consistency",
+    "Qur’an memorization & revision",
+  ]);
 
-  const [selected, setSelected] = useState<boolean>(false)
-  const {navigate} = useRouter()
-
-
-  const professions: string[] = [
+  const goalsList: string[] = [
     "Prayer consistency",
     "Qur’an memorization & revision",
     "Journaling & reflection",
     "Daily planning",
     "Menstrual tracking"
-  ]
+  ];
 
-  const gotoNotifcationPermission = ()=> navigate("/notification")
+  const toggleGoal = (goal: string) => {
+    setSelectedGoals((prev) =>
+      prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
+    );
+  };
 
+  const gotoNotifcationPermission = () => router.navigate("/notification" as any);
 
+  const handleContinue = () => {
+    const goalsToSave = selectedGoals.map((g) => {
+      if (g.includes('Prayer')) return 'prayer';
+      if (g.includes('Qur’an') || g.includes('Quran')) return 'quran';
+      if (g.includes('Journaling')) return 'journaling';
+      if (g.includes('planning')) return 'planning';
+      if (g.includes('Menstrual')) return 'menstrual';
+      return g.toLowerCase();
+    });
+
+    const payload: { lifeStage?: string; deenGoals?: string[] } = {
+      deenGoals: goalsToSave,
+    };
+    if (lifeStage) {
+      payload.lifeStage = lifeStage.toLowerCase();
+    }
+
+    updateUserData(payload, {
+      onSettled: () => {
+        gotoNotifcationPermission();
+      },
+    });
+  };
 
   return (
-
     <View style={{ flex: 1, backgroundColor: 'white', gap: 32 }}>
 
       <View style={styles.indicatorContainer}>
@@ -46,62 +80,64 @@ const OnboardingFormTwo = () => {
         />
       </View>
 
-
-        <View className='flex-1'>
-            <FlatList 
-              data={professions}
-              renderItem={({item}: {item: string})=>(
-
-                <View className='flex-row gap-6 mb-[16px]'>
-
-                  <View className='flex-1 bg-inputColor p-[16px] rounded-[8px]'>
-                    <Text>{item}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.checkBtn} className='bg-inputColor'
+      <View className='flex-1'>
+        <FlatList 
+          data={goalsList}
+          keyExtractor={(item) => item}
+          renderItem={({item}: {item: string}) => {
+            const isChecked = selectedGoals.includes(item);
+            return (
+              <View className='flex-row gap-6 mb-[16px]'>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => toggleGoal(item)}
+                  className='flex-1 bg-inputColor p-[16px] rounded-[8px]'
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => toggleGoal(item)}
+                  style={styles.checkBtn}
+                  className='bg-inputColor'
+                >
+                  <Checkbox
+                    style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}
+                    className={`${isChecked ? "bg-primary" : "border-indicator-inactive-color"} rounded-[6px]`}
+                    value={item}
+                    isChecked={isChecked}
                   >
-                    <Checkbox
-                      style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}
-                      className={`${ selected ?  "bg-primary" : "border-indicator-inactive-color"} rounded-[6px]`}
-                      value={item}
-                    >
-                      <CheckboxIndicator>
-                        <CheckboxIcon as={CheckIcon} />
-                      </CheckboxIndicator>
-                      {/* <CheckboxLabel>Student</CheckboxLabel> */}
-                    </Checkbox>
-                  </TouchableOpacity>
+                    <CheckboxIndicator>
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                  </Checkbox>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        />
+      </View>
 
-                </View>
-
-              )}
-            />
-        </View>
-
-
-            <View style={{gap: 16}}>
-              <Button
-                label="continue"
-                className='rounded-full h-[48px] font-bold '
-                onPress={gotoNotifcationPermission}
-              />
-              <Button
-                label="Skip this"
-                className='rounded-full h-[48px] font-bold bg-transparent'
-                textStyle={{color: '#5B6268'}}
-                onPress={gotoNotifcationPermission}
-              />
-            </View>
-        
-
-
-
+      <View style={{gap: 16}}>
+        <Button
+          label={isPending ? "Saving..." : "continue"}
+          className='rounded-full h-[48px] font-bold '
+          disabled={isPending}
+          onPress={handleContinue}
+        />
+        <Button
+          label="Skip this"
+          className='rounded-full h-[48px] font-bold bg-transparent'
+          textStyle={{color: '#5B6268'}}
+          onPress={gotoNotifcationPermission}
+        />
+      </View>
 
     </View>
-  )
-}
+  );
+};
 
-export default OnboardingFormTwo
+export default OnboardingFormTwo;
 
 const styles = StyleSheet.create({
   checkBtn: {
@@ -111,7 +147,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-
   carouselIndicator: {
     width: 30,
     height: 30,
@@ -130,4 +165,4 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     backgroundColor: "transparent"
   }
-})
+});

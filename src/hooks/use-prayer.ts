@@ -2,7 +2,7 @@
  * TanStack React Query Hooks for Prayer Settings & Solah Reminders
  */
 
-import { getErrorMessage } from '@/src/services/api/api-client';
+import { getErrorMessage } from '@/src/utils/error-handler';
 import { PrayerService } from '@/src/services/api/prayer-service';
 import { WorkerService } from '@/src/services/api/worker-service';
 import {

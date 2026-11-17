@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { TokenStorage } from '@/src/services/storage/token-storage';
 
 export default function QuranSettingsScreen() {
   const router = useRouter();
@@ -14,6 +15,74 @@ export default function QuranSettingsScreen() {
   const [alwaysOn, setAlwaysOn] = useState(true);
   const [showTranslation, setShowTranslation] = useState(true);
   const [showTransliteration, setShowTransliteration] = useState(true);
+
+  // Load saved preferences
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await TokenStorage.getItem('quran_settings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.selectedTheme) setSelectedTheme(parsed.selectedTheme);
+          if (parsed.readingMode) setReadingMode(parsed.readingMode);
+          if (typeof parsed.textSize === 'number') setTextSize(parsed.textSize);
+          if (typeof parsed.alwaysOn === 'boolean') setAlwaysOn(parsed.alwaysOn);
+          if (typeof parsed.showTranslation === 'boolean') setShowTranslation(parsed.showTranslation);
+          if (typeof parsed.showTransliteration === 'boolean') setShowTransliteration(parsed.showTransliteration);
+        }
+      } catch (e) {
+        console.warn('Failed to load quran settings:', e);
+      }
+    })();
+  }, []);
+
+  // Save changes
+  const saveQuranSettings = async (updates: Record<string, any>) => {
+    try {
+      const current = {
+        selectedTheme,
+        readingMode,
+        textSize,
+        alwaysOn,
+        showTranslation,
+        showTransliteration,
+        ...updates,
+      };
+      await TokenStorage.setItem('quran_settings', JSON.stringify(current));
+    } catch (e) {
+      console.warn('Failed to save quran settings:', e);
+    }
+  };
+
+  const handleThemeChange = (theme: 'Modern' | 'Stone age' | 'Dark') => {
+    setSelectedTheme(theme);
+    saveQuranSettings({ selectedTheme: theme });
+  };
+
+  const handleModeChange = (mode: 'Scroll' | 'Page') => {
+    setReadingMode(mode);
+    saveQuranSettings({ readingMode: mode });
+  };
+
+  const handleTextSizeChange = (newSize: number) => {
+    setTextSize(newSize);
+    saveQuranSettings({ textSize: newSize });
+  };
+
+  const handleAlwaysOnChange = (val: boolean) => {
+    setAlwaysOn(val);
+    saveQuranSettings({ alwaysOn: val });
+  };
+
+  const handleShowTranslationChange = (val: boolean) => {
+    setShowTranslation(val);
+    saveQuranSettings({ showTranslation: val });
+  };
+
+  const handleShowTransliterationChange = (val: boolean) => {
+    setShowTransliteration(val);
+    saveQuranSettings({ showTransliteration: val });
+  };
 
   return (
     <View className="flex-1 bg-white pt-12">
@@ -41,7 +110,7 @@ export default function QuranSettingsScreen() {
               return (
                 <TouchableOpacity
                   key={theme}
-                  onPress={() => setSelectedTheme(theme)}
+                  onPress={() => handleThemeChange(theme)}
                   className={`flex-1 p-3 rounded-2xl border-2 items-center justify-center ${
                     isSelected ? 'border-purple-600 bg-purple-50/20' : 'border-gray-200 bg-gray-50'
                   }`}
@@ -71,7 +140,7 @@ export default function QuranSettingsScreen() {
               return (
                 <TouchableOpacity
                   key={mode}
-                  onPress={() => setReadingMode(mode)}
+                  onPress={() => handleModeChange(mode)}
                   className={`flex-1 py-4 px-5 rounded-2xl border flex-row items-center justify-center gap-2 ${
                     isSelected ? 'border-purple-600 bg-purple-50/10' : 'border-gray-200 bg-white'
                   }`}
@@ -101,7 +170,7 @@ export default function QuranSettingsScreen() {
             <View className="flex-1 h-2 bg-purple-200 rounded-full relative justify-center">
               <View className="absolute left-0 h-2 bg-purple-600 rounded-full" style={{ width: `${textSize}%` }} />
               <TouchableOpacity
-                onPress={() => setTextSize((prev) => (prev >= 100 ? 20 : prev + 20))}
+                onPress={() => handleTextSizeChange(textSize >= 100 ? 20 : textSize + 20)}
                 className="w-5 h-5 bg-white rounded-full shadow border border-purple-600 absolute"
                 style={{ left: `${textSize}%` }}
               />
@@ -123,7 +192,7 @@ export default function QuranSettingsScreen() {
             </View>
             <Switch
               value={alwaysOn}
-              onValueChange={setAlwaysOn}
+              onValueChange={handleAlwaysOnChange}
               trackColor={{ false: '#E5E7EB', true: '#C084FC' }}
               thumbColor={alwaysOn ? '#9333EA' : '#F3F4F6'}
             />
@@ -140,7 +209,7 @@ export default function QuranSettingsScreen() {
             </View>
             <Switch
               value={showTranslation}
-              onValueChange={setShowTranslation}
+              onValueChange={handleShowTranslationChange}
               trackColor={{ false: '#E5E7EB', true: '#C084FC' }}
               thumbColor={showTranslation ? '#9333EA' : '#F3F4F6'}
             />
@@ -172,7 +241,7 @@ export default function QuranSettingsScreen() {
             </View>
             <Switch
               value={showTransliteration}
-              onValueChange={setShowTransliteration}
+              onValueChange={handleShowTransliterationChange}
               trackColor={{ false: '#E5E7EB', true: '#C084FC' }}
               thumbColor={showTransliteration ? '#9333EA' : '#F3F4F6'}
             />

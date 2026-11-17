@@ -5,16 +5,13 @@ import AuthHeader from '../auth-header';
 import { Button } from '../custom/button';
 import { Checkbox, CheckboxIcon, CheckboxIndicator } from '../ui/checkbox';
 
-
-
 interface OnboardingFormOneProps {
-  onNext?: () => void;
+  onNext?: (lifeStage?: string) => void;
+  selectedLifeStage?: string;
 }
 
-const OnboardingFormOne = ({ onNext }: OnboardingFormOneProps) => {
-
-  const [selected, setSelected] = useState<boolean>(false)
-
+const OnboardingFormOne = ({ onNext, selectedLifeStage }: OnboardingFormOneProps) => {
+  const [selected, setSelected] = useState<string>(selectedLifeStage || 'Student');
 
   const professions: string[] = [
     "Student",
@@ -22,12 +19,9 @@ const OnboardingFormOne = ({ onNext }: OnboardingFormOneProps) => {
     "Stay-at-home",
     "Entrepreneur",
     "Other"
-  ]
-
-
+  ];
 
   return (
-
     <View style={{ flex: 1, backgroundColor: 'white', gap: 32 }}>
 
       <View style={styles.indicatorContainer}>
@@ -46,62 +40,63 @@ const OnboardingFormOne = ({ onNext }: OnboardingFormOneProps) => {
         />
       </View>
 
-
-        <View className='flex-1'>
-            <FlatList 
-              data={professions}
-              renderItem={({item}: {item: string})=>(
-
-                <View className='flex-row gap-6 mb-[16px]'>
-
-                  <View className='flex-1 bg-inputColor p-[16px] rounded-[8px]'>
-                    <Text>{item}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.checkBtn} className='bg-inputColor'
+      <View className='flex-1'>
+        <FlatList 
+          data={professions}
+          keyExtractor={(item) => item}
+          renderItem={({item}: {item: string}) => {
+            const isChecked = selected === item;
+            return (
+              <View className='flex-row gap-6 mb-[16px]'>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setSelected(item)}
+                  className='flex-1 bg-inputColor p-[16px] rounded-[8px]'
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setSelected(item)}
+                  style={styles.checkBtn}
+                  className='bg-inputColor'
+                >
+                  <Checkbox
+                    style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}
+                    className={`${isChecked ? "bg-primary" : "border-indicator-inactive-color"} rounded-[6px]`}
+                    value={item}
+                    isChecked={isChecked}
                   >
-                    <Checkbox
-                      style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}
-                      className={`${ selected ?  "bg-primary" : "border-indicator-inactive-color"} rounded-[6px]`}
-                      value={item}
-                    >
-                      <CheckboxIndicator>
-                        <CheckboxIcon as={CheckIcon} />
-                      </CheckboxIndicator>
-                      {/* <CheckboxLabel>Student</CheckboxLabel> */}
-                    </Checkbox>
-                  </TouchableOpacity>
+                    <CheckboxIndicator>
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                  </Checkbox>
+                </TouchableOpacity>
+              </View>
+            );
+          }}
+        />
+      </View>
 
-                </View>
-
-              )}
-            />
-        </View>
-
-
-            <View style={{gap: 16}}>
-              <Button
-                label="continue"
-                className='rounded-full h-[48px] font-bold '
-                onPress={onNext}
-              />
-              <Button
-                label="Skip this"
-                className='rounded-full h-[48px] font-bold bg-transparent'
-                textStyle={{color: '#5B6268'}}
-                onPress={onNext}
-              />
-            </View>
-        
-
-
-
+      <View style={{gap: 16}}>
+        <Button
+          label="continue"
+          className='rounded-full h-[48px] font-bold '
+          onPress={() => onNext?.(selected)}
+        />
+        <Button
+          label="Skip this"
+          className='rounded-full h-[48px] font-bold bg-transparent'
+          textStyle={{color: '#5B6268'}}
+          onPress={() => onNext?.(undefined)}
+        />
+      </View>
 
     </View>
-  )
-}
+  );
+};
 
-export default OnboardingFormOne
+export default OnboardingFormOne;
 
 const styles = StyleSheet.create({
   checkBtn: {
@@ -111,7 +106,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-
   carouselIndicator: {
     width: 30,
     height: 30,
@@ -130,4 +124,4 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     backgroundColor: "transparent"
   }
-})
+});

@@ -10,6 +10,16 @@ export interface PrayerSettingsData {
   timezone?: string;
   calculationMethod?: string;
   madhab?: string;
+  adhanSound?: boolean;
+  jumuahReminder?: boolean;
+  tahajjudReminder?: boolean;
+  fajr?: boolean;
+  dhuhr?: boolean;
+  asr?: boolean;
+  maghrib?: boolean;
+  isha?: boolean;
+  reminderType?: 'sound' | 'vibration' | 'silent' | string;
+  [key: string]: any;
 }
 
 export interface PrayerSettingsRequest {

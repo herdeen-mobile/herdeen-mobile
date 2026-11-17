@@ -14,32 +14,32 @@ const FAQ_DATA: FaqItem[] = [
   {
     id: '1',
     question: "What's HerDeen?",
-    answer: "HerDeen is a faith-based platform that helps Muslimah structure the Deen & Dunya[cite: 12].",
+    answer: "HerDeen is a faith-based platform designed specifically to help Muslim women structure and balance their Deen & Dunya.",
   },
   {
     id: '2',
-    question: "What's HerDeen?",
-    answer: "HerDeen offers daily reminders, Quran tracking, dhikr counters, and lifestyle planning tailored for Muslim women.",
+    question: "How does Salah tracking work?",
+    answer: "You can check off completed prayers on your home tracker dashboard or receive tailored adhan notifications for each salah time.",
   },
   {
     id: '3',
-    question: "What's HerDeen?",
-    answer: "It provides a secure and organized space to keep your daily spiritual routines on track.",
+    question: "How is my Menstrual cycle calculated?",
+    answer: "HerDeen uses your recorded last flow date and average cycle length to estimate upcoming cycles and activate Off-Salah ibadah mode automatically.",
   },
   {
     id: '4',
-    question: "What's HerDeen?",
-    answer: "You can set custom prayer notifications, track habits, and connect with a supportive community.",
+    question: "How do I change my prayer calculation method?",
+    answer: "Navigate to Solah Settings > Calculation Method to choose from standard authorities like MWL, ISNA, and Umm al-Qura.",
   },
   {
     id: '5',
-    question: "What's HerDeen?",
-    answer: "Our goal is to make balancing your religious obligations and everyday life seamless and rewarding.",
+    question: "Can I track my daily Qur'an recitation?",
+    answer: "Yes! Use the Qur'an reader or update your pages read in the daily Ibadah tracker to maintain consistency.",
   },
   {
     id: '6',
-    question: "What's HerDeen?",
-    answer: "Download the app and start structuring your spiritual goals today!",
+    question: "Are my personal notes and data secure?",
+    answer: "Yes, all your reflections, daily plans, and account data are securely stored with end-to-end encrypted authentication.",
   },
 ];
 

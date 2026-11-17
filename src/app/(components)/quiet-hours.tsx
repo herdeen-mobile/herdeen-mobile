@@ -1,21 +1,39 @@
 // src/app/(components)/quiet-hours.tsx
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Input } from '../../../components/custom/input';
 import { Button } from '../../../components/custom/button';
+import { useUpdateUserDataMutation } from '@/src/hooks/use-auth';
+import { getErrorMessage } from '@/src/utils/error-handler';
 
 export default function QuietHoursScreen() {
   const router = useRouter();
+  const { mutate: updateUserData, isPending } = useUpdateUserDataMutation();
 
   const [isEnabled, setIsEnabled] = useState(true);
   const [fromTime, setFromTime] = useState('10:00 PM');
   const [toTime, setToTime] = useState('10:00 PM');
 
   const handleSave = () => {
-    console.log('Saved Quiet Hours:', { isEnabled, fromTime, toTime });
-    router.back();
+    updateUserData(
+      {
+        quietHours: {
+          isEnabled,
+          fromTime,
+          toTime,
+        },
+      },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+        onError: (err) => {
+          Alert.alert('Save Failed', getErrorMessage(err));
+        },
+      }
+    );
   };
 
   return (
@@ -75,9 +93,10 @@ export default function QuietHoursScreen() {
 
         {/* Save Button */}
         <Button
-          label="Save"
+          label={isPending ? "Saving..." : "Save"}
           variant="primary"
           onPress={handleSave}
+          disabled={isPending}
           className="bg-primary active:opacity-90 rounded-full py-4"
           textClassName="text-white font-bold text-base"
         />

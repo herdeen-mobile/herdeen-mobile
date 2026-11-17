@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { TokenStorage } from '@/src/services/storage/token-storage';
 
 const LANGUAGES = [
   { id: 'en-gb', name: 'English (UK)', flag: '🇬🇧' },
@@ -15,6 +16,27 @@ const LANGUAGES = [
 export default function TranslationLanguageScreen() {
   const router = useRouter();
   const [selectedLang, setSelectedLang] = useState('en-gb');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await TokenStorage.getItem('quran_translation_lang');
+        if (saved) setSelectedLang(saved);
+      } catch (e) {
+        console.warn('Failed to load language setting:', e);
+      }
+    })();
+  }, []);
+
+  const handleSelectLanguage = async (id: string) => {
+    setSelectedLang(id);
+    try {
+      await TokenStorage.setItem('quran_translation_lang', id);
+    } catch (e) {
+      console.warn('Failed to save language setting:', e);
+    }
+    router.back();
+  };
 
   return (
     <View className="flex-1 bg-white pt-12">
@@ -36,7 +58,7 @@ export default function TranslationLanguageScreen() {
           return (
             <TouchableOpacity
               key={lang.id}
-              onPress={() => setSelectedLang(lang.id)}
+              onPress={() => handleSelectLanguage(lang.id)}
               className="py-4 border-b border-gray-100 flex-row items-center justify-between"
             >
               <View className="flex-row items-center gap-4">

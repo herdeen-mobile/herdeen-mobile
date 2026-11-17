@@ -4,6 +4,7 @@
  * for Solah Reminder BullMQ/Redis background jobs.
  */
 
+import { API_ENDPOINTS } from '@/src/config/endpoints';
 import { apiClient } from '@/src/services/api/api-client';
 import { WorkerService } from '@/src/services/api/worker-service';
 import {
@@ -22,7 +23,10 @@ export const PrayerService = {
     data: PrayerSettingsRequest,
     wakeWorkerService = true
   ): Promise<PrayerSettingsResponse> {
-    const response = await apiClient.patch<PrayerSettingsResponse>('/prayer/settings', data);
+    const response = await apiClient.patch<PrayerSettingsResponse>(
+      API_ENDPOINTS.ISLAMIC.SETTINGS,
+      data
+    );
 
     if (wakeWorkerService) {
       console.log('[PrayerService] Waking worker service for Solah Reminders background jobs...');
@@ -38,7 +42,9 @@ export const PrayerService = {
    * Fetch configured Prayer Times for today (GET /islamic/prayer-times)
    */
   async getPrayerTimes(): Promise<PrayerTimesResponse> {
-    const response = await apiClient.get<PrayerTimesResponse>('/islamic/prayer-times');
+    const response = await apiClient.get<PrayerTimesResponse>(
+      API_ENDPOINTS.ISLAMIC.PRAYER_TIMES
+    );
     return response.data;
   },
 };

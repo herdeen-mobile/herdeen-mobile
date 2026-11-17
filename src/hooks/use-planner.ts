@@ -2,7 +2,7 @@
  * TanStack React Query Hooks for Daily Planner & Background Generation
  */
 
-import { getErrorMessage } from '@/src/services/api/api-client';
+import { getErrorMessage } from '@/src/utils/error-handler';
 import {
   GenerateAndPollOptions,
   PlanGenerationStage,
@@ -184,4 +184,24 @@ export const useDeletePlannerTaskMutation = () => {
     },
   });
 };
+
+/**
+ * Hook to fetch user plan history (GET /planner/history)
+ */
+export const usePlannerHistoryQuery = (options?: { enabled?: boolean }) => {
+  return useQuery<any, Error>({
+    queryKey: PLANNER_QUERY_KEYS.history(),
+    queryFn: async () => {
+      try {
+        return await PlannerService.getHistory();
+      } catch (err) {
+        throw new Error(getErrorMessage(err));
+      }
+    },
+    enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60 * 15, // 15 minutes
+  });
+};
+
+
 

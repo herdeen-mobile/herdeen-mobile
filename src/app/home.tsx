@@ -4,6 +4,12 @@ import { useDailyContentQuery } from '@/src/hooks/use-daily-content';
 import { useDailyPlanQuery, useToggleTaskCompletedMutation } from '@/src/hooks/use-planner';
 import { usePrayerTimesQuery } from '@/src/hooks/use-prayer';
 import { useTodayTrackerQuery, useTogglePrayerMutation } from '@/src/hooks/use-tracker';
+import {
+  formatPrayerTime12Hour,
+  formatRemainingTime,
+  getHijriDateString,
+  timeToMinutes,
+} from '@/src/utils/time-utils';
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -66,28 +72,6 @@ const DEFAULT_DUAS: DuaItem[] = [
     translation: 'My Lord, expand for me my chest [with assurance] and ease for me my task.',
   },
 ];
-
-// Helper to convert "HH:MM AM/PM" into minutes from midnight
-const timeToMinutes = (timeStr?: string): number => {
-  if (!timeStr) return 0;
-  const parts = timeStr.trim().split(' ');
-  const [hoursStr, minutesStr] = (parts[0] || '0:0').split(':');
-  let hours = parseInt(hoursStr, 10) || 0;
-  const minutes = parseInt(minutesStr, 10) || 0;
-  const modifier = (parts[1] || 'AM').toUpperCase();
-  if (modifier === 'PM' && hours < 12) hours += 12;
-  if (modifier === 'AM' && hours === 12) hours = 0;
-  return hours * 60 + minutes;
-};
-
-// Helper to format remaining minutes nicely (e.g. "3 Min" or "1h 20m")
-const formatRemainingTime = (mins: number): string => {
-  if (mins <= 0) return 'Due now';
-  if (mins < 60) return `${mins} Min`;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
-};
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -334,24 +318,29 @@ export default function HomeScreen() {
       <ScrollView className="flex-1 px-5 pt-12 pb-8" showsVerticalScrollIndicator={false}>
         {/* 1. Header: Greeting & Avatar */}
         <View className="flex-row justify-between items-center mb-6">
-          <TouchableOpacity
-            onPress={() => router.push('/menu-overlay' as any)}
-            className="flex-row items-center gap-3 active:opacity-80"
-          >
-            <View className="w-12 h-12 rounded-full bg-purple-200 items-center justify-center overflow-hidden border border-purple-300">
+          <View className="flex-row items-center gap-3">
+            <TouchableOpacity
+              onPress={() => router.push('/profile' as any)}
+              activeOpacity={0.8}
+              className="w-12 h-12 rounded-full bg-purple-200 items-center justify-center overflow-hidden border border-purple-300"
+            >
               <Image
                 source={require('../../assets/images/avatar.png')}
                 className="w-full h-full"
                 resizeMode="cover"
               />
-            </View>
-            <View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => router.push('/menu-overlay' as any)}
+              activeOpacity={0.8}
+            >
               <Text className="text-xs text-gray-400 font-medium">Assalamu Alaikum,</Text>
               <Text className="text-xl font-bold text-gray-900">
-                {user?.firstName ? `${user.firstName}!` : 'Aishah!'}
+                {user?.firstName ? `${user.firstName}!` : 'Sister!'}
               </Text>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
 
           <TouchableOpacity
             onPress={() => router.push('/(components)/notifications' as any)}

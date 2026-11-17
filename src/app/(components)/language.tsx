@@ -1,8 +1,9 @@
 // src/app/(components)/language.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { TokenStorage } from '@/src/services/storage/token-storage';
 
 // Define the structure of a language option
 interface LanguageOption {
@@ -28,10 +29,24 @@ export default function LanguageScreen() {
   // State to track the currently selected language ID (defaulting to English UK)
   const [selectedLanguage, setSelectedLanguage] = useState<string>('en-GB');
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await TokenStorage.getItem('app_language');
+        if (saved) setSelectedLanguage(saved);
+      } catch (e) {
+        console.warn('Failed to load language:', e);
+      }
+    })();
+  }, []);
+
   // Handle the update action when the user presses the bottom button
-  const handleUpdateLanguage = () => {
-    console.log('Language updated to:', selectedLanguage);
-    // Add your localization persistence logic here (e.g., i18n, AsyncStorage)
+  const handleUpdateLanguage = async () => {
+    try {
+      await TokenStorage.setItem('app_language', selectedLanguage);
+    } catch (e) {
+      console.warn('Failed to save language:', e);
+    }
     router.back();
   };
 
@@ -64,21 +79,21 @@ export default function LanguageScreen() {
                 key={lang.id}
                 activeOpacity={0.7}
                 onPress={() => setSelectedLanguage(lang.id)}
-                className={`flex-row items-center justify-between py-4 px-5 ${
+                className={`flex-row items-center justify-between p-4 ${
                   !isLast ? 'border-b border-border' : ''
                 }`}
               >
-                {/* Left side: Flag emoji and language name */}
-                <View className="flex-row items-center gap-3.5">
-                  <Text className="text-2xl">{lang.flag}</Text>
-                  <Text className={`text-base font-semibold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                {/* Left side: Flag and Language Name */}
+                <View className="flex-row items-center gap-3">
+                  <Text className="text-xl">{lang.flag}</Text>
+                  <Text className="text-base font-semibold text-foreground">
                     {lang.name}
                   </Text>
                 </View>
 
-                {/* Right side: Checkmark indicator if selected */}
+                {/* Right side: Checkmark Icon if selected */}
                 {isSelected && (
-                  <Ionicons name="checkmark" size={20} color="#C084FC" /> // Adjust checkmark color to match your primary theme color
+                  <Ionicons name="checkmark" size={20} color="#A855F7" />
                 )}
               </TouchableOpacity>
             );
@@ -86,14 +101,14 @@ export default function LanguageScreen() {
         </View>
       </ScrollView>
 
-      {/* 3. Fixed Bottom Update Button Container */}
-      <View className="absolute bottom-0 left-0 right-0 p-6 bg-background/80 backdrop-blur-md border-t border-border">
+      {/* 3. Bottom Sticky Action Button */}
+      <View className="absolute bottom-0 left-0 right-0 p-6 bg-background/80 border-t border-border">
         <TouchableOpacity
-          onPress={handleUpdateLanguage}
           activeOpacity={0.8}
-          className="bg-primary py-4 rounded-full items-center justify-center shadow-sm"
+          onPress={handleUpdateLanguage}
+          className="bg-primary py-4 rounded-full items-center justify-center"
         >
-          <Text className="text-white font-bold text-base">Update</Text>
+          <Text className="text-white text-base font-bold">Update</Text>
         </TouchableOpacity>
       </View>
     </View>

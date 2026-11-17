@@ -1,13 +1,16 @@
 // src/app/(components)/daily-nudges.tsx
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Input } from '../../../components/custom/input';
 import { Button } from '../../../components/custom/button';
+import { useUpdateUserDataMutation } from '@/src/hooks/use-auth';
+import { getErrorMessage } from '@/src/utils/error-handler';
 
 export default function DailyNudgesScreen() {
   const router = useRouter();
+  const { mutate: updateUserData, isPending } = useUpdateUserDataMutation();
 
   const [nudges, setNudges] = useState({
     quran: true,
@@ -22,8 +25,22 @@ export default function DailyNudgesScreen() {
   };
 
   const handleSave = () => {
-    console.log('Saved Daily Nudges:', { nudges, time: selectedTime });
-    router.back();
+    updateUserData(
+      {
+        dailyNudges: {
+          ...nudges,
+          time: selectedTime,
+        },
+      },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+        onError: (err) => {
+          Alert.alert('Save Failed', getErrorMessage(err));
+        },
+      }
+    );
   };
 
   return (
@@ -83,9 +100,10 @@ export default function DailyNudgesScreen() {
 
         {/* Save Button */}
         <Button
-          label="Save"
+          label={isPending ? "Saving..." : "Save"}
           variant="primary"
           onPress={handleSave}
+          disabled={isPending}
           className="bg-primary active:opacity-90 rounded-full py-4"
           textClassName="text-white font-bold text-base"
         />

@@ -1,23 +1,52 @@
 // src/components/cycle-settings.tsx
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Modal, FlatList, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Modal, FlatList, Platform, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '../../../components/custom/input';
 import { Button } from '../../../components/custom/button';
+import {
+  useCreateMenstrualLogMutation,
+  useMenstrualCycleQuery,
+  useUpdateMenstrualLogMutation,
+} from '@/src/hooks/use-menstrual';
+import { menstrualCycleSchema } from '@/src/validation/menstrual-schemas';
+import { getErrorMessage } from '@/src/utils/error-handler';
 
 export default function CycleSettingsComponent() {
   const router = useRouter();
 
+  // Live Query
+  const { data: cycleData, isLoading } = useMenstrualCycleQuery();
+  const createLogMutation = useCreateMenstrualLogMutation();
+  const updateLogMutation = useUpdateMenstrualLogMutation();
+
+  const isSaving = createLogMutation.isPending || updateLogMutation.isPending;
+
   // Date state initialized safely
-  const [date, setDate] = useState<Date>(new Date(2026, 5, 15)); // June 15, 2026
+  const [date, setDate] = useState<Date>(new Date());
   const [showPicker, setShowPicker] = useState(false);
 
   const [cycleLength, setCycleLength] = useState('28 days');
   const [isCycleLengthModalOpen, setIsCycleLengthModalOpen] = useState(false);
 
   const cycleOptions = ['21 days', '25 days', '28 days', '30 days', '35 days'];
+
+  // Populate data from backend if available
+  useEffect(() => {
+    if (cycleData) {
+      if (cycleData.lastFlowDate) {
+        const parsedDate = new Date(cycleData.lastFlowDate);
+        if (!isNaN(parsedDate.getTime())) {
+          setDate(parsedDate);
+        }
+      }
+      if (cycleData.cycleLength) {
+        setCycleLength(`${cycleData.cycleLength} days`);
+      }
+    }
+  }, [cycleData]);
 
   // Compute safeDate first so we never call methods on undefined/non-Date objects
   const safeDate = (date instanceof Date && !isNaN(date.getTime()))
@@ -28,8 +57,49 @@ export default function CycleSettingsComponent() {
   const formattedDate = safeDate.toISOString().split('T')[0];
 
   const handleUpdate = () => {
-    console.log('Updated Cycle Settings:', { lastDate: formattedDate, cycleLength });
-    router.back();
+    const numericDays = parseInt(cycleLength.replace(/\D/g, ''), 10) || 28;
+
+    const validation = menstrualCycleSchema.safeParse({
+      lastFlowDate: formattedDate,
+      cycleLength: numericDays,
+    });
+
+    if (!validation.success) {
+      Alert.alert('Validation Error', validation.error.issues[0]?.message || 'Please check your inputs.');
+      return;
+    }
+
+    if (cycleData?._id || cycleData?.lastFlowDate) {
+      updateLogMutation.mutate(
+        {
+          lastFlowDate: formattedDate,
+          cycleLength: numericDays,
+        },
+        {
+          onSuccess: () => {
+            router.back();
+          },
+          onError: (err) => {
+            Alert.alert('Update Failed', getErrorMessage(err));
+          },
+        }
+      );
+    } else {
+      createLogMutation.mutate(
+        {
+          lastFlowDate: formattedDate,
+          cycleLength: numericDays,
+        },
+        {
+          onSuccess: () => {
+            router.back();
+          },
+          onError: (err) => {
+            Alert.alert('Save Failed', getErrorMessage(err));
+          },
+        }
+      );
+    }
   };
 
   return (
@@ -119,9 +189,10 @@ export default function CycleSettingsComponent() {
 
         {/* Update Button */}
         <Button
-          label="Update"
+          label={isSaving ? 'Updating...' : 'Update'}
           variant="primary"
           onPress={handleUpdate}
+          disabled={isSaving || isLoading}
           className="bg-primary active:opacity-90"
           textClassName="text-white font-bold"
         />

@@ -9,6 +9,7 @@
  * 4. Poll GET /planner/daily/:date until the plan is available.
  */
 
+import { API_ENDPOINTS } from '@/src/config/endpoints';
 import { ENV } from '@/src/config/env';
 import { apiClient } from '@/src/services/api/api-client';
 import { WorkerService } from '@/src/services/api/worker-service';
@@ -40,7 +41,10 @@ export const PlannerService = {
    * The backend queues the BullMQ job in Redis and returns immediately.
    */
   async generateDailyPlan(data: GenerateDailyPlanRequest): Promise<GenerateDailyPlanResponse> {
-    const response = await apiClient.post<GenerateDailyPlanResponse>('/planner/generate', data);
+    const response = await apiClient.post<GenerateDailyPlanResponse>(
+      API_ENDPOINTS.PLANNER.GENERATE,
+      data
+    );
     return response.data;
   },
 
@@ -49,7 +53,7 @@ export const PlannerService = {
    * @param date Date formatted as YYYY-MM-DD
    */
   async getDailyPlan(date: string): Promise<DailyPlanResponse> {
-    const response = await apiClient.get<DailyPlanResponse>(`/planner/daily/${date}`);
+    const response = await apiClient.get<DailyPlanResponse>(API_ENDPOINTS.PLANNER.DAILY(date));
     return response.data;
   },
 
@@ -57,7 +61,7 @@ export const PlannerService = {
    * 3. Add Custom Task to date (POST /planner/add/:date)
    */
   async addTask(date: string, data: AddTaskRequest): Promise<any> {
-    const response = await apiClient.post(`/planner/add/${date}`, data);
+    const response = await apiClient.post(API_ENDPOINTS.PLANNER.ADD_TASK(date), data);
     return response.data;
   },
 
@@ -65,7 +69,7 @@ export const PlannerService = {
    * 4. Edit Task (PUT /planner/edit/:date/:taskId)
    */
   async editTask(date: string, taskId: string, data: EditTaskRequest): Promise<any> {
-    const response = await apiClient.put(`/planner/edit/${date}/${taskId}`, data);
+    const response = await apiClient.put(API_ENDPOINTS.PLANNER.EDIT_TASK(date, taskId), data);
     return response.data;
   },
 
@@ -73,7 +77,7 @@ export const PlannerService = {
    * 5. Delete Task (DELETE /planner/:date/:taskId)
    */
   async deleteTask(date: string, taskId: string): Promise<any> {
-    const response = await apiClient.delete(`/planner/${date}/${taskId}`);
+    const response = await apiClient.delete(API_ENDPOINTS.PLANNER.DELETE_TASK(date, taskId));
     return response.data;
   },
 
@@ -81,7 +85,7 @@ export const PlannerService = {
    * 6. Toggle Completed Status (PUT /planner/completed/:date/:task)
    */
   async toggleCompleted(date: string, task: string): Promise<any> {
-    const response = await apiClient.put(`/planner/completed/${date}/${encodeURIComponent(task)}`);
+    const response = await apiClient.put(API_ENDPOINTS.PLANNER.COMPLETED_TASK(date, task));
     return response.data;
   },
 
@@ -89,7 +93,7 @@ export const PlannerService = {
    * 7. Get Completed Tasks (GET /planner/completed/tasks/:date)
    */
   async getCompletedTasks(date: string): Promise<any> {
-    const response = await apiClient.get(`/planner/completed/tasks/${date}`);
+    const response = await apiClient.get(API_ENDPOINTS.PLANNER.COMPLETED_TASKS_BY_DATE(date));
     return response.data;
   },
 
@@ -97,7 +101,7 @@ export const PlannerService = {
    * 8. Get Planner History (GET /planner/history)
    */
   async getHistory(): Promise<any> {
-    const response = await apiClient.get('/planner/history');
+    const response = await apiClient.get(API_ENDPOINTS.PLANNER.HISTORY);
     return response.data;
   },
 
@@ -164,4 +168,3 @@ export const PlannerService = {
     }
   },
 };
-

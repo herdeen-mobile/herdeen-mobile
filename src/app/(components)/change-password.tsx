@@ -1,13 +1,17 @@
 // src/app/(components)/change-password.tsx
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Input } from '../../../components/custom/input';
 import { Button } from '../../../components/custom/button';
+import { useChangePasswordMutation } from '@/src/hooks/use-auth';
+import { changePasswordSchema } from '@/src/validation/auth-schemas';
+import { getErrorMessage } from '@/src/utils/error-handler';
 
 export default function ChangePasswordScreen() {
   const router = useRouter();
+  const { mutate: changePassword, isPending } = useChangePasswordMutation();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -19,9 +23,34 @@ export default function ChangePasswordScreen() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleUpdatePassword = () => {
-    console.log('Updating password...');
-    // Add your API / update logic here
-    router.back();
+    const result = changePasswordSchema.safeParse({
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
+
+    if (!result.success) {
+      Alert.alert('Validation Error', result.error.issues[0]?.message || 'Please check your passwords.');
+      return;
+    }
+
+    changePassword(
+      {
+        currentPassword,
+        password: newPassword,
+        confirmPassword,
+      },
+      {
+        onSuccess: () => {
+          Alert.alert('Success', 'Your password has been changed successfully.', [
+            { text: 'OK', onPress: () => router.back() },
+          ]);
+        },
+        onError: (err) => {
+          Alert.alert('Error', getErrorMessage(err));
+        },
+      }
+    );
   };
 
   return (
@@ -92,9 +121,10 @@ export default function ChangePasswordScreen() {
 
         {/* Update Button */}
         <Button
-          label="Update Password"
+          label={isPending ? 'Updating...' : 'Update Password'}
           variant="primary"
           onPress={handleUpdatePassword}
+          disabled={isPending}
           className="bg-primary active:opacity-90 rounded-full py-4"
           textClassName="text-white font-bold text-base"
         />

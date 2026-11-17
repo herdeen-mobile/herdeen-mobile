@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useUpdatePrayerSettingsMutation } from '@/src/hooks/use-prayer';
 
 export default function CalculationMethodScreen() {
   const router = useRouter();
   const [selectedMethod, setSelectedMethod] = useState('Muslim World League (MWL)');
+  const { mutate: updateSettings, isPending } = useUpdatePrayerSettingsMutation();
 
   const methods = [
     'Muslim World League (MWL)',
@@ -18,6 +20,21 @@ export default function CalculationMethodScreen() {
     'Turkey Presidency of Religious Affairs',
   ];
 
+  const handleSelect = (method: string) => {
+    setSelectedMethod(method);
+    updateSettings(
+      {
+        data: { calculationMethod: method },
+        wakeWorker: true,
+      },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+      }
+    );
+  };
+
   return (
     <View className="flex-1 bg-white">
       <ScrollView className="flex-1 px-5 pt-12 pb-10">
@@ -28,6 +45,7 @@ export default function CalculationMethodScreen() {
             <Ionicons name="arrow-back" size={20} color="#1F2937" />
           </TouchableOpacity>
           <Text className="text-xl font-bold text-gray-900">Calculation Method</Text>
+          {isPending && <ActivityIndicator size="small" color="#9333EA" style={{ marginLeft: 8 }} />}
         </View>
 
         {/* Methods List */}
@@ -37,7 +55,8 @@ export default function CalculationMethodScreen() {
             return (
               <TouchableOpacity
                 key={index}
-                onPress={() => setSelectedMethod(method)}
+                disabled={isPending}
+                onPress={() => handleSelect(method)}
                 className={`flex-row justify-between items-center p-4 rounded-2xl border ${
                   isSelected ? 'bg-purple-50/40 border-purple-200' : 'bg-white border-gray-100'
                 }`}

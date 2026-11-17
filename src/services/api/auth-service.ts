@@ -3,6 +3,7 @@
  * Implements all authentication endpoints from Herdeen Postman Collection
  */
 
+import { API_ENDPOINTS } from '@/src/config/endpoints';
 import { apiClient } from '@/src/services/api/api-client';
 import {
   AdminChangePasswordRequest,
@@ -31,7 +32,7 @@ export const AuthService = {
    * Sends user details and triggers an OTP code to user's email
    */
   async preRegister(data: PreRegisterRequest): Promise<PreRegisterResponse> {
-    const response = await apiClient.post<PreRegisterResponse>('/auth/pre-register', {
+    const response = await apiClient.post<PreRegisterResponse>(API_ENDPOINTS.AUTH.PRE_REGISTER, {
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
       email: data.email.trim().toLowerCase(),
@@ -45,7 +46,7 @@ export const AuthService = {
    * Verifies the OTP code sent after pre-registration and activates account
    */
   async register(data: RegisterRequest): Promise<RegisterResponse> {
-    const response = await apiClient.post<RegisterResponse>('/auth/register', {
+    const response = await apiClient.post<RegisterResponse>(API_ENDPOINTS.AUTH.REGISTER, {
       email: data.email.trim().toLowerCase(),
       otp: data.otp.trim(),
     });
@@ -57,7 +58,7 @@ export const AuthService = {
    * Authenticates user with email and password
    */
   async login(data: LoginRequest): Promise<LoginResponse> {
-    const response = await apiClient.post<LoginResponse>('/auth/login', {
+    const response = await apiClient.post<LoginResponse>(API_ENDPOINTS.AUTH.LOGIN, {
       email: data.email.trim().toLowerCase(),
       password: data.password,
     });
@@ -69,7 +70,7 @@ export const AuthService = {
    * Requests a password reset or verification OTP code
    */
   async requestOtp(data: RequestOtpRequest): Promise<RequestOtpResponse> {
-    const response = await apiClient.post<RequestOtpResponse>('/auth/request-otp', {
+    const response = await apiClient.post<RequestOtpResponse>(API_ENDPOINTS.AUTH.REQUEST_OTP, {
       email: data.email.trim().toLowerCase(),
     });
     return response.data;
@@ -80,7 +81,7 @@ export const AuthService = {
    * Resets password using OTP, new password and confirmPassword
    */
   async resetPassword(data: ResetPasswordRequest): Promise<ResetPasswordResponse> {
-    const response = await apiClient.patch<ResetPasswordResponse>('/auth/reset-password', {
+    const response = await apiClient.patch<ResetPasswordResponse>(API_ENDPOINTS.AUTH.RESET_PASSWORD, {
       email: data.email.trim().toLowerCase(),
       otp: data.otp.trim(),
       password: data.password,
@@ -94,7 +95,7 @@ export const AuthService = {
    * Revokes the active refresh token and invalidates session
    */
   async logout(data?: LogoutRequest): Promise<LogoutResponse> {
-    const response = await apiClient.post<LogoutResponse>('/auth/logout', data || {});
+    const response = await apiClient.post<LogoutResponse>(API_ENDPOINTS.AUTH.LOGOUT, data || {});
     return response.data;
   },
 
@@ -103,7 +104,7 @@ export const AuthService = {
    * Obtains a new access token and rotated refresh token
    */
   async refreshToken(): Promise<RefreshTokenResponse> {
-    const response = await apiClient.post<RefreshTokenResponse>('/auth/refresh');
+    const response = await apiClient.post<RefreshTokenResponse>(API_ENDPOINTS.AUTH.REFRESH);
     return response.data;
   },
 
@@ -113,7 +114,7 @@ export const AuthService = {
    * Admin Create (POST /auth/admin/create)
    */
   async adminCreate(data: AdminCreateRequest): Promise<any> {
-    const response = await apiClient.post('/auth/admin/create', {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH.ADMIN_CREATE, {
       email: data.email.trim().toLowerCase(),
     });
     return response.data;
@@ -123,7 +124,7 @@ export const AuthService = {
    * Admin Login (POST /auth/admin/login)
    */
   async adminLogin(data: AdminLoginRequest): Promise<any> {
-    const response = await apiClient.post('/auth/admin/login', {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH.ADMIN_LOGIN, {
       email: data.email.trim().toLowerCase(),
       password: data.password,
     });
@@ -134,7 +135,7 @@ export const AuthService = {
    * Admin Request OTP (POST /auth/admin/otp)
    */
   async adminOtp(data: AdminOtpRequest): Promise<any> {
-    const response = await apiClient.post('/auth/admin/otp', {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH.ADMIN_OTP, {
       email: data.email.trim().toLowerCase(),
     });
     return response.data;
@@ -144,7 +145,7 @@ export const AuthService = {
    * Admin Reset Password (PATCH /auth/admin/reset-password)
    */
   async adminResetPassword(data: AdminResetPasswordRequest): Promise<any> {
-    const response = await apiClient.patch('/auth/admin/reset-password', {
+    const response = await apiClient.patch(API_ENDPOINTS.AUTH.ADMIN_RESET_PASSWORD, {
       email: data.email.trim().toLowerCase(),
       otp: data.otp.trim(),
       password: data.password,
@@ -157,8 +158,37 @@ export const AuthService = {
    * Admin Change Default Password (PATCH /auth/admin/password)
    */
   async adminChangePassword(data: AdminChangePasswordRequest): Promise<any> {
-    const response = await apiClient.patch('/auth/admin/password', data);
+    const response = await apiClient.patch(API_ENDPOINTS.AUTH.ADMIN_CHANGE_PASSWORD, data);
+    return response.data;
+  },
+
+  /**
+   * Update User AI, Life Stage & Deen Goals (PATCH /auth/user-data)
+   */
+  async updateUserData(data: { lifeStage?: string; deenGoals?: string[]; [key: string]: any }): Promise<any> {
+    const response = await apiClient.patch(API_ENDPOINTS.AUTH.USER_DATA, data);
+    return response.data;
+  },
+
+  /**
+   * Clear Backend Cache / Reset Tracking Data (POST /clear-cache)
+   */
+  async clearCache(): Promise<any> {
+    const response = await apiClient.post(API_ENDPOINTS.CLEAR_CACHE, {});
+    return response.data;
+  },
+
+  /**
+   * Change Password (PATCH /auth/admin/password)
+   */
+  async changePassword(data: { currentPassword?: string; password: string; confirmPassword: string }): Promise<any> {
+    const response = await apiClient.patch(API_ENDPOINTS.AUTH.ADMIN_CHANGE_PASSWORD, {
+      password: data.currentPassword || '',
+      data: {
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      },
+    });
     return response.data;
   },
 };
-

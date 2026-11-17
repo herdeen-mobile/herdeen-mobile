@@ -1,14 +1,44 @@
 // src/components/daily-preferences.tsx
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Button } from '../../../components/custom/button';
+import { useAuth } from '@/src/context/auth-context';
+import { useUpdateUserDataMutation } from '@/src/hooks/use-auth';
+import { getErrorMessage } from '@/src/utils/error-handler';
 
 export default function DailyPreferencesComponent() {
   const router = useRouter();
+  const { user, updateUser } = useAuth();
+  const { mutate: updateUserData, isPending } = useUpdateUserDataMutation();
+
   const [reminderStyle, setReminderStyle] = useState('Gentle nudges');
   const [growthStyle, setGrowthStyle] = useState('Spiritual growth');
+
+  useEffect(() => {
+    if (user?.reminderStyle) {
+      setReminderStyle(user.reminderStyle);
+    }
+    if (user?.growthStyle) {
+      setGrowthStyle(user.growthStyle);
+    }
+  }, [user]);
+
+  const handleSave = () => {
+    updateUserData(
+      { reminderStyle, growthStyle },
+      {
+        onSuccess: async () => {
+          await updateUser({ reminderStyle, growthStyle });
+          router.back();
+        },
+        onError: (err) => {
+          Alert.alert('Save Failed', getErrorMessage(err));
+        },
+      }
+    );
+  };
 
   return (
     <View className="flex-1 bg-background">
@@ -44,8 +74,8 @@ export default function DailyPreferencesComponent() {
           })}
         </View>
 
-        {/* Section 2: Reminder Style / Focus */}
-        <Text className="text-xs font-semibold text-muted-foreground mb-3">Reminder Style</Text>
+        {/* Section 2: Focus Style */}
+        <Text className="text-xs font-semibold text-muted-foreground mb-3">Growth Focus</Text>
         <View className="gap-3 mb-10">
           {['Productivity balance', 'Spiritual growth'].map(style => {
             const isSelected = growthStyle === style;
@@ -65,9 +95,10 @@ export default function DailyPreferencesComponent() {
         </View>
 
         <Button
-          label="Save"
+          label={isPending ? "Saving..." : "Save"}
           variant="primary"
-          onPress={() => router.back()}
+          onPress={handleSave}
+          disabled={isPending}
           className="bg-primary active:opacity-90"
           textClassName="text-white font-bold"
         />

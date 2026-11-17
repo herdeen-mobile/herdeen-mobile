@@ -1,8 +1,9 @@
 // src/app/(components)/appearance.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { TokenStorage } from '@/src/services/storage/token-storage';
 
 export default function AppearanceScreen() {
   const router = useRouter();
@@ -10,10 +11,26 @@ export default function AppearanceScreen() {
   // State for the selected theme mode ('light' | 'dark' | 'system')
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('light');
 
-  const handleSelectTheme = (selectedTheme: 'light' | 'dark' | 'system') => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const saved = await TokenStorage.getItem('app_theme');
+        if (saved && (saved === 'light' || saved === 'dark' || saved === 'system')) {
+          setTheme(saved);
+        }
+      } catch (e) {
+        console.warn('Failed to load theme:', e);
+      }
+    })();
+  }, []);
+
+  const handleSelectTheme = async (selectedTheme: 'light' | 'dark' | 'system') => {
     setTheme(selectedTheme);
-    console.log('Selected Theme:', selectedTheme);
-    // Add your color scheme toggle logic here (e.g., NativeWind useColorScheme or Appearance API)
+    try {
+      await TokenStorage.setItem('app_theme', selectedTheme);
+    } catch (e) {
+      console.warn('Failed to save theme:', e);
+    }
   };
 
   return (
